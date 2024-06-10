@@ -13,7 +13,7 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const router = useRouter(); // Menggunakan useRouter untuk navigasi
+  const router = useRouter(); 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,6 +38,7 @@ const Register = () => {
 
         const data = await response.json();
         if (response.status === 201) {
+          localStorage.setItem('token', data.token);
           resolve(data);
         } else {
           reject(data);
@@ -86,7 +87,7 @@ const Register = () => {
             Register to Highking
           </h2>
           <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-            Register to create an account with Highking
+            Register to create an account with Highking, the platform for you to manage your business Open trips easily.
           </p>
 
           <form className="mt-8" onSubmit={handleSubmit}>
@@ -149,6 +150,17 @@ const Register = () => {
               <BottomGradient />
             </button>
           </form>
+        </div>
+        <div>
+          <p className="text-center mt-4 text-sm text-neutral-600 dark:text-neutral-300">
+            Already have an account?{" "}
+            <a
+              href="/auth/login"
+              className="text-primary font-medium dark:text-primary-foreground"
+            >
+              Login
+            </a>
+          </p>
         </div>
       </motion.div>
     </div>
