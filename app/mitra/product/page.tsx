@@ -710,7 +710,10 @@ const Product = () => {
                           You have no open trip
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          You can start selling as soon as you add a open trip. <br/>Click the button at the right page to add a new open trip.
+                          You can start selling as soon as you add a open trip.{" "}
+                          <br />
+                          Click the button at the right page to add a new open
+                          trip.
                         </p>
                       </div>
                     </div>
@@ -723,7 +726,9 @@ const Product = () => {
                           </TableHead>
                           <TableHead>Open Trip Name</TableHead>
                           <TableHead>Mountain</TableHead>
-                          <TableHead>Status</TableHead>
+                          <TableHead className="hidden md:table-cell">
+                            Status
+                          </TableHead>
                           <TableHead className="hidden md:table-cell">
                             Price
                           </TableHead>
