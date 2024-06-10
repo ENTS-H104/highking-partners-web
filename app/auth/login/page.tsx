@@ -42,7 +42,7 @@ const Login = () => {
     toast.promise(loginPromise, {
       loading: "Logging in...",
       success: (data) => {
-        router.push("/mitra/dashboard");
+        router.push("/mitra/product");
         return "Login successful";
       },
       error: "Login failed. Please check your credentials and try again.",
