@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Toaster, toast } from "sonner";
 import { cn } from "@/utils/cn";
+import { motion } from "framer-motion";
 
 const Login = () => {
   const router = useRouter();
@@ -58,6 +59,16 @@ const Login = () => {
       }}
     >
       <Toaster position="top-center" richColors />
+      <motion.div
+          initial={{ opacity: 0.0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{
+            delay: 0.3,
+            duration: 0.5,
+            ease: "easeInOut",
+          }}
+          className=""
+        >
       <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Welcome to Highking
@@ -98,6 +109,7 @@ const Login = () => {
           </button>
         </form>
       </div>
+    </motion.div>
     </div>
   );
 };
