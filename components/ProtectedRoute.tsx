@@ -15,7 +15,6 @@ const ProtectedRoute = (WrappedComponent: React.ComponentType) => {
           router.replace('/auth/login');
         }, 2500);
       } else {
-        toast.success('Welcome back!');
         setIsAuthenticated(true);
       }
     }, [router]);
