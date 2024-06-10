@@ -32,7 +32,7 @@ export default function Component() {
             <div className="px-4 md:px-6 space-y-10 xl:space-y-16">
               <div className="grid max-w-[1300px] mx-auto gap-4 px-4 sm:px-6  md:mb-16 md:px-10 md:grid-cols-2 md:gap-16 items-center justify-center">
                 <div>
-                  <img
+                  <Image
                     src="/iv_highking.svg"
                     height="600"
                     alt="Hero"
