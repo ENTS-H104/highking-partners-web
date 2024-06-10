@@ -74,7 +74,7 @@ const Login = () => {
           Welcome to Highking
         </h2>
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          Login to highking if you can because we don&apos;t have a login flow
+          Login to highking if you can because we don t have a login flow
           yet
         </p>
 
