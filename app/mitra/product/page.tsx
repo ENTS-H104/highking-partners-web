@@ -703,206 +703,230 @@ const Product = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="hidden w-[100px] sm:table-cell">
-                          <span className="sr-only">Image</span>
-                        </TableHead>
-                        <TableHead>Open Trip Name</TableHead>
-                        <TableHead>Mountain</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="hidden md:table-cell">
-                          Price
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell">
-                          Total Participants
-                        </TableHead>
-                        <TableHead>
-                          <span className="sr-only">Actions</span>
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {openTrips.map((trip) => (
-                        <TableRow key={trip.open_trip_uuid}>
-                          <TableCell className="hidden sm:table-cell">
-                            <Image
-                              alt="Product image"
-                              className="aspect-square rounded-md object-cover"
-                              height="64"
-                              src={trip.image_url || "/placeholder.svg"}
-                              width="64"
-                            />
-                          </TableCell>
-                          <TableCell className="font-medium">
-                            {trip.name}
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            {trip.mountain_name}
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant="outline">Active</Badge>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            {new Intl.NumberFormat("id-ID", {
-                              style: "currency",
-                              currency: "IDR",
-                            }).format(trip.price)}
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell">
-                            {trip.total_participants}
-                          </TableCell>
-                          <TableCell>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <Button
-                                  aria-haspopup="true"
-                                  size="icon"
-                                  variant="ghost"
-                                >
-                                  <MoreHorizontal className="h-4 w-4" />
-                                  <span className="sr-only">Toggle menu</span>
-                                </Button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
-                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuLabel>
-                                  <Dialog
-                                    open={isScheduleModalOpen}
-                                    onOpenChange={setScheduleModalOpen}
+                  {openTrips.length === 0 ? (
+                    <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm py-20 md:py-40">
+                      <div className="flex flex-col items-center gap-1 text-center">
+                        <h3 className="text-2xl font-bold tracking-tight">
+                          You have no open trip
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          You can start selling as soon as you add a open trip. <br/>Click the button at the right page to add a new open trip.
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="hidden w-[100px] sm:table-cell">
+                            <span className="sr-only">Image</span>
+                          </TableHead>
+                          <TableHead>Open Trip Name</TableHead>
+                          <TableHead>Mountain</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead className="hidden md:table-cell">
+                            Price
+                          </TableHead>
+                          <TableHead className="hidden md:table-cell">
+                            Total Participants
+                          </TableHead>
+                          <TableHead>
+                            <span className="sr-only">Actions</span>
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {openTrips.map((trip) => (
+                          <TableRow key={trip.open_trip_uuid}>
+                            <TableCell className="hidden sm:table-cell">
+                              <Image
+                                alt="Product image"
+                                className="aspect-square rounded-md object-cover"
+                                height="64"
+                                src={trip.image_url || "/placeholder.svg"}
+                                width="64"
+                              />
+                            </TableCell>
+                            <TableCell className="font-medium">
+                              {trip.name}
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              {trip.mountain_name}
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant="outline">Active</Badge>
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              {new Intl.NumberFormat("id-ID", {
+                                style: "currency",
+                                currency: "IDR",
+                              }).format(trip.price)}
+                            </TableCell>
+                            <TableCell className="hidden md:table-cell">
+                              {trip.total_participants}
+                            </TableCell>
+                            <TableCell>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button
+                                    aria-haspopup="true"
+                                    size="icon"
+                                    variant="ghost"
                                   >
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        size="sm"
-                                        className="h-8 gap-1"
-                                        onClick={() => handleEditClick(trip)}
-                                      >
-                                        Add Schedule
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-3xl">
-                                      <DialogHeader>
-                                        <DialogTitle>Add Schedule</DialogTitle>
-                                        <DialogDescription>
-                                          Fill out the details for the new
-                                          schedule.
-                                        </DialogDescription>
-                                      </DialogHeader>
-                                      <div className="grid grid-cols-4 gap-4">
-                                        <input
-                                          type="hidden"
-                                          name="open_trip_uuid"
-                                          value={newSchedule.open_trip_uuid}
-                                        />
-                                        <div className="col-span-2">
-                                          <Label htmlFor="day">Day</Label>
-                                          <Input
-                                            name="day"
-                                            type="number"
-                                            value={newSchedule.day}
-                                            onChange={handleScheduleInputChange}
-                                          />
-                                        </div>
-                                        <div className="col-span-4">
-                                          <Label htmlFor="description">
-                                            Description
-                                          </Label>
-                                          <Input
-                                            name="description"
-                                            placeholder="Description"
-                                            value={newSchedule.description}
-                                            onChange={handleScheduleInputChange}
-                                          />
-                                        </div>
-                                      </div>
-                                      <DialogFooter>
-                                        <Button onClick={handleAddSchedule}>
+                                    <MoreHorizontal className="h-4 w-4" />
+                                    <span className="sr-only">Toggle menu</span>
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                  <DropdownMenuLabel>
+                                    <Dialog
+                                      open={isScheduleModalOpen}
+                                      onOpenChange={setScheduleModalOpen}
+                                    >
+                                      <DialogTrigger asChild>
+                                        <Button
+                                          size="sm"
+                                          className="h-8 gap-1"
+                                          onClick={() => handleEditClick(trip)}
+                                        >
                                           Add Schedule
                                         </Button>
+                                      </DialogTrigger>
+                                      <DialogContent className="sm:max-w-3xl">
+                                        <DialogHeader>
+                                          <DialogTitle>
+                                            Add Schedule
+                                          </DialogTitle>
+                                          <DialogDescription>
+                                            Fill out the details for the new
+                                            schedule.
+                                          </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid grid-cols-4 gap-4">
+                                          <input
+                                            type="hidden"
+                                            name="open_trip_uuid"
+                                            value={newSchedule.open_trip_uuid}
+                                          />
+                                          <div className="col-span-2">
+                                            <Label htmlFor="day">Day</Label>
+                                            <Input
+                                              name="day"
+                                              type="number"
+                                              value={newSchedule.day}
+                                              onChange={
+                                                handleScheduleInputChange
+                                              }
+                                            />
+                                          </div>
+                                          <div className="col-span-4">
+                                            <Label htmlFor="description">
+                                              Description
+                                            </Label>
+                                            <Input
+                                              name="description"
+                                              placeholder="Description"
+                                              value={newSchedule.description}
+                                              onChange={
+                                                handleScheduleInputChange
+                                              }
+                                            />
+                                          </div>
+                                        </div>
+                                        <DialogFooter>
+                                          <Button onClick={handleAddSchedule}>
+                                            Add Schedule
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setScheduleModalOpen(false)
+                                            }
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
+                                  </DropdownMenuLabel>
+                                  <DropdownMenuLabel>
+                                    <Dialog
+                                      open={isFaqModalOpen}
+                                      onOpenChange={setFaqModalOpen}
+                                    >
+                                      <DialogTrigger asChild>
                                         <Button
-                                          variant="outline"
+                                          size="sm"
+                                          className="h-8 gap-1"
                                           onClick={() =>
-                                            setScheduleModalOpen(false)
+                                            handleAddFaqClick(trip)
                                           }
                                         >
-                                          Cancel
-                                        </Button>
-                                      </DialogFooter>
-                                    </DialogContent>
-                                  </Dialog>
-                                </DropdownMenuLabel>
-                                <DropdownMenuLabel>
-                                  <Dialog
-                                    open={isFaqModalOpen}
-                                    onOpenChange={setFaqModalOpen}
-                                  >
-                                    <DialogTrigger asChild>
-                                      <Button
-                                        size="sm"
-                                        className="h-8 gap-1"
-                                        onClick={() => handleAddFaqClick(trip)}
-                                      >
-                                        Add FAQ
-                                      </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-3xl">
-                                      <DialogHeader>
-                                        <DialogTitle>Add FAQ</DialogTitle>
-                                        <DialogDescription>
-                                          Fill out the details for the new FAQ.
-                                        </DialogDescription>
-                                      </DialogHeader>
-                                      <div className="grid grid-cols-4 gap-4">
-                                        <input
-                                          type="hidden"
-                                          name="open_trip_uuid"
-                                          value={newFaq.open_trip_uuid}
-                                        />
-                                        <div className="col-span-4">
-                                          <Label htmlFor="faqQuestion">
-                                            Question
-                                          </Label>
-                                          <Input
-                                            name="faqQuestion"
-                                            placeholder="Question"
-                                            value={newFaqQuestion}
-                                            onChange={handleFaqQuestionChange}
-                                          />
-                                        </div>
-                                        <div className="col-span-4">
-                                          <Label htmlFor="faqAnswer">
-                                            Answer
-                                          </Label>
-                                          <Input
-                                            name="faqAnswer"
-                                            placeholder="Answer"
-                                            value={newFaqAnswer}
-                                            onChange={handleFaqAnswerChange}
-                                          />
-                                        </div>
-                                      </div>
-                                      <DialogFooter>
-                                        <Button onClick={handleAddFaq}>
                                           Add FAQ
                                         </Button>
-                                        <Button
-                                          variant="outline"
-                                          onClick={() => setFaqModalOpen(false)}
-                                        >
-                                          Cancel
-                                        </Button>
-                                      </DialogFooter>
-                                    </DialogContent>
-                                  </Dialog>
-                                </DropdownMenuLabel>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                                      </DialogTrigger>
+                                      <DialogContent className="sm:max-w-3xl">
+                                        <DialogHeader>
+                                          <DialogTitle>Add FAQ</DialogTitle>
+                                          <DialogDescription>
+                                            Fill out the details for the new
+                                            FAQ.
+                                          </DialogDescription>
+                                        </DialogHeader>
+                                        <div className="grid grid-cols-4 gap-4">
+                                          <input
+                                            type="hidden"
+                                            name="open_trip_uuid"
+                                            value={newFaq.open_trip_uuid}
+                                          />
+                                          <div className="col-span-4">
+                                            <Label htmlFor="faqQuestion">
+                                              Question
+                                            </Label>
+                                            <Input
+                                              name="faqQuestion"
+                                              placeholder="Question"
+                                              value={newFaqQuestion}
+                                              onChange={handleFaqQuestionChange}
+                                            />
+                                          </div>
+                                          <div className="col-span-4">
+                                            <Label htmlFor="faqAnswer">
+                                              Answer
+                                            </Label>
+                                            <Input
+                                              name="faqAnswer"
+                                              placeholder="Answer"
+                                              value={newFaqAnswer}
+                                              onChange={handleFaqAnswerChange}
+                                            />
+                                          </div>
+                                        </div>
+                                        <DialogFooter>
+                                          <Button onClick={handleAddFaq}>
+                                            Add FAQ
+                                          </Button>
+                                          <Button
+                                            variant="outline"
+                                            onClick={() =>
+                                              setFaqModalOpen(false)
+                                            }
+                                          >
+                                            Cancel
+                                          </Button>
+                                        </DialogFooter>
+                                      </DialogContent>
+                                    </Dialog>
+                                  </DropdownMenuLabel>
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  )}
                 </CardContent>
                 <CardFooter>
                   <div className="text-xs text-muted-foreground">
