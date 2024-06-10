@@ -1,9 +1,9 @@
 "use client";
 import React, { useState } from "react";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Toaster, toast } from 'sonner';
+import { Toaster, toast } from "sonner";
 import { cn } from "@/utils/cn";
 
 const Login = () => {
@@ -15,13 +15,16 @@ const Login = () => {
     e.preventDefault();
     const loginPromise = new Promise(async (resolve, reject) => {
       try {
-        const response = await fetch("https://highking.cloud/api/partners/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email, password }),
-        });
+        const response = await fetch(
+          "https://highking.cloud/api/partners/login",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+          }
+        );
 
         const data = await response.json();
         if (response.status === 201) {
@@ -35,13 +38,13 @@ const Login = () => {
     });
 
     toast.promise(loginPromise, {
-      loading: 'Logging in...',
+      loading: "Logging in...",
       success: (data) => {
         console.log("Login successful", data);
-        router.push('/dashboard');
-        return 'Login successful';
+        router.push("/mitra/dashboard");
+        return "Login successful";
       },
-      error: 'Login failed. Please check your credentials and try again.',
+      error: "Login failed. Please check your credentials and try again.",
     });
   };
 
@@ -60,7 +63,8 @@ const Login = () => {
           Welcome to Highking
         </h2>
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          Login to highking if you can because we don&apos;t have a login flow yet
+          Login to highking if you can because we don&apos;t have a login flow
+          yet
         </p>
 
         <form className="mt-8" onSubmit={handleSubmit}>
@@ -98,7 +102,7 @@ const Login = () => {
   );
 };
 
-const BottomGradient = () => {  
+const BottomGradient = () => {
   return (
     <>
       <span className="group-hover/btn:opacity-100 block transition duration-500 opacity-0 absolute h-px w-full -bottom-px inset-x-0 bg-gradient-to-r from-transparent via-green-500 to-transparent" />

@@ -51,7 +51,7 @@ const Register = () => {
         router.push('/auth/login');
         return 'Registration successful! Please check your email to verify your account.';
       },
-      error: 'Registration failed. Please check the information and try again.',
+      error: (err) => `Registration failed. ${err.message}: ${err.serverMessage.code}. Please try again.`,
     });
   };
 

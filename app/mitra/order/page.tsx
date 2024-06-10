@@ -7,7 +7,6 @@ import {
   CreditCard,
   File,
   Home,
-  LineChart,
   ListFilter,
   MoreVertical,
   Package,
@@ -17,7 +16,6 @@ import {
   Settings,
   ShoppingCart,
   Truck,
-  Users2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -72,7 +70,7 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 
-export default function Dashboard() {
+export default function Order() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -81,14 +79,20 @@ export default function Dashboard() {
             href="#"
             className="group flex h-9 w-9 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:h-8 md:w-8 md:text-base"
           >
-            <Package2 className="h-4 w-4 transition-all group-hover:scale-110" />
-            <span className="sr-only">Acme Inc</span>
+            <Image
+              src="/logo_highking_stroke.svg"
+              alt="HighKing Logo"
+              width={20}
+              height={20}
+              className="h-4 w-4 transition-all group-hover:scale-110 text-white"
+            />
+            <span className="sr-only">HighKing</span>
           </Link>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/mitra/dashboard"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <Home className="h-5 w-5" />
@@ -112,7 +116,7 @@ export default function Dashboard() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
-                  href="#"
+                  href="/mitra/product"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
                   <Package className="h-5 w-5" />
@@ -120,30 +124,6 @@ export default function Dashboard() {
                 </Link>
               </TooltipTrigger>
               <TooltipContent side="right">Products</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <Users2 className="h-5 w-5" />
-                  <span className="sr-only">Customers</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Customers</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Link
-                  href="#"
-                  className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
-                >
-                  <LineChart className="h-5 w-5" />
-                  <span className="sr-only">Analytics</span>
-                </Link>
-              </TooltipTrigger>
-              <TooltipContent side="right">Analytics</TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </nav>
@@ -179,11 +159,17 @@ export default function Dashboard() {
                   href="#"
                   className="group flex h-10 w-10 shrink-0 items-center justify-center gap-2 rounded-full bg-primary text-lg font-semibold text-primary-foreground md:text-base"
                 >
-                  <Package2 className="h-5 w-5 transition-all group-hover:scale-110" />
-                  <span className="sr-only">Acme Inc</span>
+                  <Image
+                    src="/logo_highking_stroke.svg"
+                    alt="HighKing Logo"
+                    width={20}
+                    height={20}
+                    className="transition-all group-hover:scale-110"
+                  />
+                  <span className="sr-only">HighKing</span>
                 </Link>
                 <Link
-                  href="#"
+                  href="/mitra/dashboard"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <Home className="h-5 w-5" />
@@ -197,25 +183,11 @@ export default function Dashboard() {
                   Orders
                 </Link>
                 <Link
-                  href="#"
+                  href="/mitra/product"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
                   <Package className="h-5 w-5" />
                   Products
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                >
-                  <Users2 className="h-5 w-5" />
-                  Customers
-                </Link>
-                <Link
-                  href="#"
-                  className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
-                >
-                  <LineChart className="h-5 w-5" />
-                  Settings
                 </Link>
               </nav>
             </SheetContent>
@@ -223,19 +195,7 @@ export default function Dashboard() {
           <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Dashboard</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Orders</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Recent Orders</BreadcrumbPage>
+                <BreadcrumbPage>Order</BreadcrumbPage>
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
@@ -255,7 +215,7 @@ export default function Dashboard() {
                 className="overflow-hidden rounded-full"
               >
                 <Image
-                  src="/placeholder-user.jpg"
+                  src="/placeholder.svg"
                   width={36}
                   height={36}
                   alt="Avatar"
