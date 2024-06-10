@@ -755,10 +755,8 @@ const Product = () => {
                             <TableCell className="font-medium">
                               {trip.name}
                             </TableCell>
+                            <TableCell>{trip.mountain_name}</TableCell>
                             <TableCell className="hidden md:table-cell">
-                              {trip.mountain_name}
-                            </TableCell>
-                            <TableCell>
                               <Badge variant="outline">Active</Badge>
                             </TableCell>
                             <TableCell className="hidden md:table-cell">
