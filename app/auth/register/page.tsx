@@ -1,9 +1,10 @@
 "use client";
 import React, { useState } from "react";
 import { Toaster, toast } from 'sonner';
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { Input } from "../../../components/ui/input";
 import { cn } from "@/utils/cn";
+import { useRouter } from 'next/navigation';
 
 const Register = () => {
   const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
+  const router = useRouter(); // Menggunakan useRouter untuk navigasi
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -40,10 +42,15 @@ const Register = () => {
         reject(error);
       }
     });
+    
+    console.log(registerPromise);
 
     toast.promise(registerPromise, {
       loading: 'Registering...',
-      success: () => 'Registration successful! Please check your email to verify your account.',
+      success: () => {
+        router.push('/auth/login');
+        return 'Registration successful! Please check your email to verify your account.';
+      },
       error: 'Registration failed. Please check the information and try again.',
     });
   };

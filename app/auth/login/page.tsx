@@ -1,11 +1,13 @@
 "use client";
 import React, { useState } from "react";
+import { useRouter } from 'next/navigation';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Toaster, toast } from 'sonner';
 import { cn } from "@/utils/cn";
 
 const Login = () => {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -36,8 +38,7 @@ const Login = () => {
       loading: 'Logging in...',
       success: (data) => {
         console.log("Login successful", data);
-        // Redirect to dashboard
-        window.location.href = "/dashboard";
+        router.push('/dashboard');
         return 'Login successful';
       },
       error: 'Login failed. Please check your credentials and try again.',
@@ -88,7 +89,7 @@ const Login = () => {
             className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
           >
-            Sign up &rarr;
+            Log in &rarr;
             <BottomGradient />
           </button>
         </form>
