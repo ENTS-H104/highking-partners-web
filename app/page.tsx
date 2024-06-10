@@ -46,7 +46,7 @@ export default function Component() {
                   </h1>
                   <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
                     Highking is a platform for you to manage your business trips
-                    easily. Join us and let's grow together.
+                    easily. Join us and lets grow together.
                   </p>
                   <div className="space-x-4">
                     <Link
