@@ -115,6 +115,94 @@ interface Mountain {
 const Product = () => {
   const [openTrips, setOpenTrips] = useState<OpenTrip[]>([]);
   const [mountains, setMountains] = useState<Mountain[]>([]);
+  const [isScheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [isFaqModalOpen, setFaqModalOpen] = useState(false);
+  const [currentTrip, setCurrentTrip] = useState<OpenTrip | null>(null);
+  const [newFaqQuestion, setNewFaqQuestion] = useState("");
+  const [newFaqAnswer, setNewFaqAnswer] = useState("");
+
+  const [newSchedule, setNewSchedule] = useState({
+    open_trip_uuid: "",
+    day: 1,
+    description: "",
+  });
+
+  const [newFaq, setNewFaq] = useState({
+    open_trip_uuid: "",
+    description: "",
+  });
+
+  const handleEditClick = (trip: OpenTrip) => {
+    setCurrentTrip(trip);
+    setNewSchedule({ ...newSchedule, open_trip_uuid: trip.open_trip_uuid });
+    setScheduleModalOpen(true);
+  };
+
+  const handleAddFaqClick = (trip: OpenTrip) => {
+    setCurrentTrip(trip);
+    setNewFaq({ ...newFaq, open_trip_uuid: trip.open_trip_uuid });
+    setFaqModalOpen(true);
+  };
+
+  const handleScheduleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setNewSchedule((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFaqQuestionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewFaqQuestion(e.target.value);
+  };
+
+  const handleFaqAnswerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewFaqAnswer(e.target.value);
+  };
+
+  const handleAddSchedule = async () => {
+    try {
+      const response = await axios.post(
+        "https://highking.cloud/api/open-trips/schedules",
+        newSchedule,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      toast.success("Schedule added successfully!");
+      setScheduleModalOpen(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      toast.error("Failed to add schedule. Please try again.");
+      console.error("Failed to add schedule:", error);
+    }
+  };
+
+  const handleAddFaq = async () => {
+    const faqDescription = `Question: ${newFaqQuestion} \n Answer: ${newFaqAnswer}`;
+    const faqData = { ...newFaq, description: faqDescription };
+
+    try {
+      const response = await axios.post(
+        "https://highking.cloud/api/open-trips/faqs",
+        faqData,
+        {
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        }
+      );
+      toast.success("FAQ added successfully!");
+      setFaqModalOpen(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      toast.error("Failed to add FAQ. Please try again.");
+      console.error("Failed to add FAQ:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchMountains = async () => {
@@ -679,8 +767,135 @@ const Product = () => {
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                                <DropdownMenuItem>Edit</DropdownMenuItem>
-                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                                <DropdownMenuLabel>
+                                  <Dialog
+                                    open={isScheduleModalOpen}
+                                    onOpenChange={setScheduleModalOpen}
+                                  >
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        className="h-8 gap-1"
+                                        onClick={() => handleEditClick(trip)}
+                                      >
+                                        Add Schedule
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-3xl">
+                                      <DialogHeader>
+                                        <DialogTitle>Add Schedule</DialogTitle>
+                                        <DialogDescription>
+                                          Fill out the details for the new
+                                          schedule.
+                                        </DialogDescription>
+                                      </DialogHeader>
+                                      <div className="grid grid-cols-4 gap-4">
+                                        <input
+                                          type="hidden"
+                                          name="open_trip_uuid"
+                                          value={newSchedule.open_trip_uuid}
+                                        />
+                                        <div className="col-span-2">
+                                          <Label htmlFor="day">Day</Label>
+                                          <Input
+                                            name="day"
+                                            type="number"
+                                            value={newSchedule.day}
+                                            onChange={handleScheduleInputChange}
+                                          />
+                                        </div>
+                                        <div className="col-span-4">
+                                          <Label htmlFor="description">
+                                            Description
+                                          </Label>
+                                          <Input
+                                            name="description"
+                                            placeholder="Description"
+                                            value={newSchedule.description}
+                                            onChange={handleScheduleInputChange}
+                                          />
+                                        </div>
+                                      </div>
+                                      <DialogFooter>
+                                        <Button onClick={handleAddSchedule}>
+                                          Add Schedule
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          onClick={() =>
+                                            setScheduleModalOpen(false)
+                                          }
+                                        >
+                                          Cancel
+                                        </Button>
+                                      </DialogFooter>
+                                    </DialogContent>
+                                  </Dialog>
+                                </DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                  <Dialog
+                                    open={isFaqModalOpen}
+                                    onOpenChange={setFaqModalOpen}
+                                  >
+                                    <DialogTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        className="h-8 gap-1"
+                                        onClick={() => handleAddFaqClick(trip)}
+                                      >
+                                        Add FAQ
+                                      </Button>
+                                    </DialogTrigger>
+                                    <DialogContent className="sm:max-w-3xl">
+                                      <DialogHeader>
+                                        <DialogTitle>Add FAQ</DialogTitle>
+                                        <DialogDescription>
+                                          Fill out the details for the new FAQ.
+                                        </DialogDescription>
+                                      </DialogHeader>
+                                      <div className="grid grid-cols-4 gap-4">
+                                        <input
+                                          type="hidden"
+                                          name="open_trip_uuid"
+                                          value={newFaq.open_trip_uuid}
+                                        />
+                                        <div className="col-span-4">
+                                          <Label htmlFor="faqQuestion">
+                                            Question
+                                          </Label>
+                                          <Input
+                                            name="faqQuestion"
+                                            placeholder="Question"
+                                            value={newFaqQuestion}
+                                            onChange={handleFaqQuestionChange}
+                                          />
+                                        </div>
+                                        <div className="col-span-4">
+                                          <Label htmlFor="faqAnswer">
+                                            Answer
+                                          </Label>
+                                          <Input
+                                            name="faqAnswer"
+                                            placeholder="Answer"
+                                            value={newFaqAnswer}
+                                            onChange={handleFaqAnswerChange}
+                                          />
+                                        </div>
+                                      </div>
+                                      <DialogFooter>
+                                        <Button onClick={handleAddFaq}>
+                                          Add FAQ
+                                        </Button>
+                                        <Button
+                                          variant="outline"
+                                          onClick={() => setFaqModalOpen(false)}
+                                        >
+                                          Cancel
+                                        </Button>
+                                      </DialogFooter>
+                                    </DialogContent>
+                                  </Dialog>
+                                </DropdownMenuLabel>
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
