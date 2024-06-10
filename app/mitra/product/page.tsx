@@ -1,4 +1,6 @@
 "use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -61,9 +63,157 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import ProtectedRoute from '@/components/ProtectedRoute';
+import ProtectedRoute from "@/components/ProtectedRoute";
+
+import { Label } from "@/components/ui/label";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface OpenTrip {
+  open_trip_uuid: string;
+  name: string;
+  image_url: string;
+  price: number;
+  mountain_name: string;
+  mountain_uuid: string;
+  total_participants: string;
+  created_at: string;
+}
+interface NewOpenTrip {
+  mountain_uuid: string;
+  partner_uid: string;
+  name: string;
+  description: string;
+  price: string;
+  min_people: string;
+  max_people: string;
+  policy: string;
+  include: string;
+  exclude: string;
+  gmaps: string;
+  start_date: string;
+  end_date: string;
+  start_time: string;
+  end_time: string;
+  image: File | null;
+}
+
+interface Mountain {
+  mountain_uuid: string;
+  name: string;
+}
 
 const Product = () => {
+  const [openTrips, setOpenTrips] = useState<OpenTrip[]>([]);
+  const [mountains, setMountains] = useState<Mountain[]>([]);
+
+  useEffect(() => {
+    const fetchMountains = async () => {
+      try {
+        const response = await axios.get(
+          "https://highking.cloud/api/mountains",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        setMountains(response.data.data);
+      } catch (error) {
+        console.error("Failed to fetch mountains:", error);
+      }
+    };
+
+    fetchMountains();
+  }, []);
+
+  const [newTrip, setNewTrip] = useState<NewOpenTrip>({
+    mountain_uuid: "",
+    partner_uid: "",
+    name: "",
+    description: "",
+    price: "",
+    min_people: "",
+    max_people: "",
+    policy: "",
+    include: "",
+    exclude: "",
+    gmaps: "",
+    start_date: "",
+    end_date: "",
+    start_time: "",
+    end_time: "",
+    image: null,
+  });
+
+  useEffect(() => {
+    const fetchOpenTrips = async () => {
+      try {
+        const partnerId = await getCurrentPartnerId();
+        const trips = await getMitraProfile(partnerId);
+        setOpenTrips(trips);
+        setNewTrip((prevTrip) => ({ ...prevTrip, partner_uid: partnerId }));
+      } catch (error) {
+        console.error("Failed to fetch open trips:", error);
+      }
+    };
+
+    fetchOpenTrips();
+  }, []);
+
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewTrip((prevTrip) => ({ ...prevTrip, [name]: value }));
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setNewTrip((prevTrip) => ({ ...prevTrip, [name]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    setNewTrip((prevTrip) => ({ ...prevTrip, image: file }));
+  };
+
+  const handleAddProduct = async () => {
+    const formData = new FormData();
+    for (const key in newTrip) {
+      console.log(newTrip[key as keyof NewOpenTrip]);
+      if (newTrip[key as keyof NewOpenTrip] !== null) {
+        formData.append(
+          key,
+          newTrip[key as keyof NewOpenTrip] as string | Blob
+        );
+      }
+    }
+    try {
+      const response = await axios.post(
+        "https://highking.cloud/api/open-trips",
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      setModalOpen(false);
+    } catch (error) {
+      console.error("Failed to create open trip:", error);
+    }
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -250,13 +400,9 @@ const Product = () => {
                   <DropdownMenuContent align="end">
                     <DropdownMenuLabel>Filter by</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    <DropdownMenuCheckboxItem checked>
-                      Active
-                    </DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem>Draft</DropdownMenuCheckboxItem>
-                    <DropdownMenuCheckboxItem>
-                      Archived
-                    </DropdownMenuCheckboxItem>
+                    <DropdownMenuItem>Active</DropdownMenuItem>
+                    <DropdownMenuItem>Draft</DropdownMenuItem>
+                    <DropdownMenuItem>Archived</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
                 <Button size="sm" variant="outline" className="h-8 gap-1">
@@ -265,12 +411,193 @@ const Product = () => {
                     Export
                   </span>
                 </Button>
-                <Button size="sm" className="h-8 gap-1">
-                  <PlusCircle className="h-3.5 w-3.5" />
-                  <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
-                    Add Product
-                  </span>
-                </Button>
+                <Dialog open={isModalOpen} onOpenChange={setModalOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="h-8 gap-1"
+                      onClick={() => setModalOpen(true)}
+                    >
+                      <PlusCircle className="h-3.5 w-3.5" />
+                      <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">
+                        Add Open Trip
+                      </span>
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-3xl">
+                    <DialogHeader>
+                      <DialogTitle>Add New Open Trip</DialogTitle>
+                      <DialogDescription>
+                        Fill out the details for the new open trip.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid grid-cols-4 gap-4">
+                      <input
+                        type="hidden"
+                        name="partner_uid"
+                        value={newTrip.partner_uid}
+                      />
+                      <div className="col-span-2">
+                        <Label htmlFor="mountain_uuid">Mountain</Label>
+                        <select
+                          name="mountain_uuid"
+                          value={newTrip.mountain_uuid}
+                          onChange={handleSelectChange}
+                          className="w-full border border-gray-300 rounded p-2"
+                        >
+                          <option value="">Select a mountain</option>
+                          {mountains.map((mountain) => (
+                            <option
+                              key={mountain.mountain_uuid}
+                              value={mountain.mountain_uuid}
+                            >
+                              {mountain.name}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input
+                          name="name"
+                          placeholder="Name"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Input
+                          name="description"
+                          placeholder="Description"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="price">Price</Label>
+                        <Input
+                          name="price"
+                          placeholder="Price"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="min_people">Min People</Label>
+                        <Input
+                          name="min_people"
+                          placeholder="Min People"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="max_people">Max People</Label>
+                        <Input
+                          name="max_people"
+                          placeholder="Max People"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="policy">Policy</Label>
+                        <Input
+                          name="policy"
+                          placeholder="Policy"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="include">Include</Label>
+                        <Input
+                          name="include"
+                          placeholder="Include"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="exclude">Exclude</Label>
+                        <Input
+                          name="exclude"
+                          placeholder="Exclude"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="gmaps">Google Maps Link</Label>
+                        <Input
+                          name="gmaps"
+                          placeholder="Google Maps Link"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="start_date">Start Date</Label>
+                        <Input
+                          name="start_date"
+                          type="date"
+                          placeholder="Start Date"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="end_date">End Date</Label>
+                        <Input
+                          name="end_date"
+                          type="date"
+                          placeholder="End Date"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="start_time">Start Time</Label>
+                        <Input
+                          name="start_time"
+                          type="time"
+                          placeholder="Start Time"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="end_time">End Time</Label>
+                        <Input
+                          name="end_time"
+                          type="time"
+                          placeholder="End Time"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="image">Image</Label>
+                        <Input
+                          name="image"
+                          type="file"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button onClick={handleAddProduct}>Add Product</Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => setModalOpen(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
             <TabsContent value="all">
@@ -288,16 +615,14 @@ const Product = () => {
                         <TableHead className="hidden w-[100px] sm:table-cell">
                           <span className="sr-only">Image</span>
                         </TableHead>
-                        <TableHead>Name</TableHead>
+                        <TableHead>Open Trip Name</TableHead>
+                        <TableHead>Mountain</TableHead>
                         <TableHead>Status</TableHead>
                         <TableHead className="hidden md:table-cell">
                           Price
                         </TableHead>
                         <TableHead className="hidden md:table-cell">
-                          Total Sales
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell">
-                          Created at
+                          Total Participants
                         </TableHead>
                         <TableHead>
                           <span className="sr-only">Actions</span>
@@ -305,283 +630,62 @@ const Product = () => {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          Laser Lemonade Machine
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Draft</Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          $499.99
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          25
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2023-07-12 10:42 AM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          Hypernova Headphones
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Active</Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          $129.99
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          100
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2023-10-18 03:21 PM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          AeroGlow Desk Lamp
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Active</Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          $39.99
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          50
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2023-11-29 08:15 AM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          TechTonic Energy Drink
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="secondary">Draft</Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          $2.99
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          0
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2023-12-25 11:59 PM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          Gamer Gear Pro Controller
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Active</Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          $59.99
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          75
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2024-01-01 12:00 AM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="hidden sm:table-cell">
-                          <Image
-                            alt="Product image"
-                            className="aspect-square rounded-md object-cover"
-                            height="64"
-                            src="/placeholder.svg"
-                            width="64"
-                          />
-                        </TableCell>
-                        <TableCell className="font-medium">
-                          Luminous VR Headset
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant="outline">Active</Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          $199.99
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          30
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell">
-                          2024-02-14 02:14 PM
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Toggle menu</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
-                              <DropdownMenuItem>Delete</DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
+                      {openTrips.map((trip) => (
+                        <TableRow key={trip.open_trip_uuid}>
+                          <TableCell className="hidden sm:table-cell">
+                            <Image
+                              alt="Product image"
+                              className="aspect-square rounded-md object-cover"
+                              height="64"
+                              src={trip.image_url || "/placeholder.svg"}
+                              width="64"
+                            />
+                          </TableCell>
+                          <TableCell className="font-medium">
+                            {trip.name}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {trip.mountain_name}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">Active</Badge>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {new Intl.NumberFormat("id-ID", {
+                              style: "currency",
+                              currency: "IDR",
+                            }).format(trip.price)}
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            {trip.total_participants}
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  aria-haspopup="true"
+                                  size="icon"
+                                  variant="ghost"
+                                >
+                                  <MoreHorizontal className="h-4 w-4" />
+                                  <span className="sr-only">Toggle menu</span>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem>Edit</DropdownMenuItem>
+                                <DropdownMenuItem>Delete</DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
                 </CardContent>
                 <CardFooter>
                   <div className="text-xs text-muted-foreground">
-                    Showing <strong>1-10</strong> of <strong>32</strong>{" "}
-                    products
+                    Showing <strong>{openTrips.length}</strong> products
                   </div>
                 </CardFooter>
               </Card>
@@ -591,6 +695,30 @@ const Product = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ProtectedRoute(Product);
+
+const getCurrentPartnerId = async () => {
+  const response = await axios.get(
+    "https://highking.cloud/api/partners/get-current-user",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  return response.data.data[0].partner_uid;
+};
+
+const getMitraProfile = async (partnerId: string) => {
+  const response = await axios.get(
+    `https://highking.cloud/api/open-trips/partners/${partnerId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  return response.data.data[0].open_trip_data;
+};

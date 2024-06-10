@@ -29,6 +29,7 @@ const Login = () => {
 
         const data = await response.json();
         if (response.status === 201) {
+          localStorage.setItem('token', data.token);
           resolve(data);
         } else {
           reject(data);
@@ -41,7 +42,6 @@ const Login = () => {
     toast.promise(loginPromise, {
       loading: "Logging in...",
       success: (data) => {
-        console.log("Login successful", data);
         router.push("/mitra/dashboard");
         return "Login successful";
       },

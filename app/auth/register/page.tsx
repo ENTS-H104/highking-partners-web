@@ -38,7 +38,6 @@ const Register = () => {
 
         const data = await response.json();
         if (response.status === 201) {
-          localStorage.setItem('token', data.token);
           resolve(data);
         } else {
           reject(data);
@@ -47,8 +46,6 @@ const Register = () => {
         reject(error);
       }
     });
-
-    console.log(registerPromise);
 
     toast.promise(registerPromise, {
       loading: 'Registering...',

@@ -9,7 +9,8 @@ const ProtectedRoute = (WrappedComponent: React.ComponentType) => {
 
     useEffect(() => {
       const token = localStorage.getItem('token');
-      if (!token) {
+
+      if (!token || token === 'undefined') {
         toast.error('You must be logged in to access this page');
         setTimeout(() => {
           router.replace('/auth/login');
