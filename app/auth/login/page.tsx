@@ -111,7 +111,7 @@ const Login = () => {
       </div>
       <div>
         <p className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-300">
-          Don't have an account?{" "}
+          Dont have an account?{" "}
           <a
             href="/auth/register"
             className="text-primary dark:text-primary-400 font-medium"
