@@ -1,5 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
@@ -208,8 +209,13 @@ const Product = () => {
           },
         }
       );
+      toast.success("Product added successfully!");
       setModalOpen(false);
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
+      toast.error("Failed to add product. Please try again.");
       console.error("Failed to create open trip:", error);
     }
   };
