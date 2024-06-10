@@ -12,12 +12,12 @@ export default function Component() {
       <header className="fixed top-0 left-0 right-0 h-14 flex items-center justify-center border-b bg-white z-10">
         <Image
           src="/logo_highking_fill.svg"
-          alt="Highking Logo"
+          alt="HighKing Logo"
           width={32}
           height={32}
           className="-mt-0.5"
         />
-        <p className="mx-4 font-medium">Highking Partners Dashboard</p>
+        <p className="mx-4 font-medium">HighKing Partners Dashboard</p>
       </header>
       <main className="flex-1">
         <div
@@ -45,7 +45,7 @@ export default function Component() {
                     Lets Join Us, Partners!
                   </h1>
                   <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Highking is a platform for you to manage your business trips
+                    HighKing is a platform for you to manage your business trips
                     easily. Join us and lets grow together.
                   </p>
                   <div className="space-x-4">

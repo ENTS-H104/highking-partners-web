@@ -6,8 +6,8 @@ import { Toaster } from "sonner";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Highking Partner",
-  description: "Highking Partner Dashboard",
+  title: "HighKing Partner",
+  description: "HighKing Partner Dashboard",
 };
 
 export default function RootLayout({
@@ -18,8 +18,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <title>Highking Partner</title>
-        <meta name="description" content="Highking Partner Dashboard" />
         <link rel="icon" href="/logo_highking_fill.svg" type="image/svg+xml" />
       </head>
       <body className={inter.className}>{children}</body>

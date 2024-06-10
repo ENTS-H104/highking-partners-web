@@ -29,7 +29,7 @@ const Login = () => {
 
         const data = await response.json();
         if (response.status === 201) {
-          localStorage.setItem('token', data.token);
+          localStorage.setItem("token", data.token);
           resolve(data);
         } else {
           reject(data);
@@ -60,67 +60,66 @@ const Login = () => {
     >
       <Toaster position="top-center" richColors />
       <motion.div
-          initial={{ opacity: 0.0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{
-            delay: 0.3,
-            duration: 0.5,
-            ease: "easeInOut",
-          }}
-          className=""
-        >
-      <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
-        <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-          Welcome to Highking
-        </h2>
-        <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-          Login to highking if you can because we don t have a login flow
-          yet
-        </p>
+        initial={{ opacity: 0.0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{
+          delay: 0.3,
+          duration: 0.5,
+          ease: "easeInOut",
+        }}
+        className=""
+      >
+        <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
+          <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+            Welcome to HighKing
+          </h2>
+          <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
+            Login to highking if you can because we don t have a login flow yet
+          </p>
 
-        <form className="mt-8" onSubmit={handleSubmit}>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="email">Email Address</Label>
-            <Input
-              id="email"
-              placeholder="projectmayhem@fc.com"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </LabelInputContainer>
-          <LabelInputContainer className="mb-4">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              placeholder="••••••••"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </LabelInputContainer>
+          <form className="mt-8" onSubmit={handleSubmit}>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="email">Email Address</Label>
+              <Input
+                id="email"
+                placeholder="projectmayhem@fc.com"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </LabelInputContainer>
+            <LabelInputContainer className="mb-4">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                placeholder="••••••••"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </LabelInputContainer>
 
-          <button
-            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
-            type="submit"
-          >
-            Log in 
-            <BottomGradient />
-          </button>
-        </form>
-      </div>
-      <div>
-        <p className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-300">
-          Dont have an account?{" "}
-          <a
-            href="/auth/register"
-            className="text-primary dark:text-primary-400 font-medium"
-          >
-            Register
-          </a>
-        </p>
-      </div>
-    </motion.div>
+            <button
+              className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+              type="submit"
+            >
+              Log in
+              <BottomGradient />
+            </button>
+          </form>
+        </div>
+        <div>
+          <p className="mt-4 text-center text-sm text-neutral-600 dark:text-neutral-300">
+            Dont have an account?{" "}
+            <a
+              href="/auth/register"
+              className="text-primary dark:text-primary-400 font-medium"
+            >
+              Register
+            </a>
+          </p>
+        </div>
+      </motion.div>
     </div>
   );
 };

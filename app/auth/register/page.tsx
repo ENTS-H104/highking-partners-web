@@ -13,7 +13,7 @@ const Register = () => {
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [address, setAddress] = useState("");
-  const router = useRouter(); 
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -48,14 +48,15 @@ const Register = () => {
     });
 
     toast.promise(registerPromise, {
-      loading: 'Registering...',
+      loading: "Registering...",
       success: () => {
         setTimeout(() => {
-          router.push('/auth/login');
+          router.push("/auth/login");
         }, 3000);
-        return 'Registration successful! Please check your email to verify your account.';
+        return "Registration successful! Please check your email to verify your account.";
       },
-      error: (err) => `Registration failed. ${err.message}: ${err.serverMessage.code}. Please try again.`,
+      error: (err) =>
+        `Registration failed. ${err.message}: ${err.serverMessage.code}. Please try again.`,
     });
   };
 
@@ -81,10 +82,11 @@ const Register = () => {
       >
         <div className="max-w-md w-full mx-auto rounded-none md:rounded-2xl p-4 md:p-8 shadow-input bg-white dark:bg-black">
           <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
-            Register to Highking
+            Register to HighKing
           </h2>
           <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
-            Register to create an account with Highking, the platform for you to manage your business Open trips easily.
+            Register to create an account with HighKing, the platform for you to
+            manage your business Open trips easily.
           </p>
 
           <form className="mt-8" onSubmit={handleSubmit}>

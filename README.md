@@ -1,1 +1,1 @@
-## Highking Partners Website
+## HighKing Partners Website
