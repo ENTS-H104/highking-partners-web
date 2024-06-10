@@ -34,7 +34,8 @@ export default function Component() {
                 <div>
                   <Image
                     src="/iv_highking.svg"
-                    height="600"
+                    height={200}
+                    width={500}
                     alt="Hero"
                     className="mx-auto overflow-hidden rounded-t-xl object-cover"
                   />
