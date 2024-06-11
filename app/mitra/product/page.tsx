@@ -525,7 +525,7 @@ const Product = () => {
                         Fill out the details for the new open trip.
                       </DialogDescription>
                     </DialogHeader>
-                    <div className="grid grid-cols-4 gap-4">
+                    <div className="grid -mt-2 grid-cols-4 gap-x-4 gap-y-2">
                       <input
                         type="hidden"
                         name="partner_uid"
@@ -552,7 +552,7 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="name">Name</Label>
+                        <Label htmlFor="name">Open Trip Name</Label>
                         <Input
                           name="name"
                           placeholder="Name"
@@ -579,6 +579,15 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
+                        <Label htmlFor="policy">Policy</Label>
+                        <Input
+                          name="policy"
+                          placeholder="Policy"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-1">
                         <Label htmlFor="min_people">Min People</Label>
                         <Input
                           name="min_people"
@@ -587,7 +596,7 @@ const Product = () => {
                         />
                       </div>
 
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <Label htmlFor="max_people">Max People</Label>
                         <Input
                           name="max_people"
@@ -597,16 +606,7 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="policy">Policy</Label>
-                        <Input
-                          name="policy"
-                          placeholder="Policy"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="col-span-2">
-                        <Label htmlFor="include">Include</Label>
+                        <Label htmlFor="include">Include (Separate with comma)</Label>
                         <Input
                           name="include"
                           placeholder="Include"
@@ -615,7 +615,7 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="exclude">Exclude</Label>
+                        <Label htmlFor="exclude">Exclude (Separate with comma)</Label>
                         <Input
                           name="exclude"
                           placeholder="Exclude"
@@ -623,16 +623,7 @@ const Product = () => {
                         />
                       </div>
 
-                      <div className="col-span-2">
-                        <Label htmlFor="gmaps">Google Maps Link</Label>
-                        <Input
-                          name="gmaps"
-                          placeholder="Google Maps Link"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <Label htmlFor="start_date">Start Date</Label>
                         <Input
                           name="start_date"
@@ -642,7 +633,7 @@ const Product = () => {
                         />
                       </div>
 
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <Label htmlFor="end_date">End Date</Label>
                         <Input
                           name="end_date"
@@ -652,7 +643,7 @@ const Product = () => {
                         />
                       </div>
 
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <Label htmlFor="start_time">Start Time</Label>
                         <Input
                           name="start_time"
@@ -662,12 +653,21 @@ const Product = () => {
                         />
                       </div>
 
-                      <div className="col-span-2">
+                      <div className="col-span-1">
                         <Label htmlFor="end_time">End Time</Label>
                         <Input
                           name="end_time"
                           type="time"
                           placeholder="End Time"
+                          onChange={handleInputChange}
+                        />
+                      </div>
+
+                      <div className="col-span-2">
+                        <Label htmlFor="gmaps">Google Maps Link</Label>
+                        <Input
+                          name="gmaps"
+                          placeholder="Google Maps Link"
                           onChange={handleInputChange}
                         />
                       </div>
