@@ -3,10 +3,34 @@
  * @see https://v0.dev/t/KPCmQ0q5cbP
  * Documentation: https://v0.dev/docs#integrating-generated-code-into-your-nextjs-app
  */
+"use client";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getCurrentUser } from "@/services/api";
+import { useState } from "react";
 
 export default function Component() {
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  useEffect(() => {
+    getCurrentUser()
+      .then(() => {
+        router.push("/mitra/product");
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+        console.log("User is not logged in");
+        setIsLoading(false);
+      });
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div></div>
+    );
+  }
   return (
     <div className="flex flex-col min-h-[100dvh]">
       <header className="fixed top-0 left-0 right-0 h-14 flex items-center justify-center border-b bg-white z-10">
