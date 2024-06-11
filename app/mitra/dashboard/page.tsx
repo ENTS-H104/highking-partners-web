@@ -14,6 +14,7 @@ import {
   Settings,
   ShoppingCart,
   UserRound,
+  PencilIcon,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -60,7 +61,12 @@ import {
 } from "@/components/ui/tooltip";
 
 import ProtectedRoute from "@/components/ProtectedRoute";
-import { getCurrentUser, logout, updateProfile } from "@/services/api";
+import {
+  getCurrentUser,
+  logout,
+  updateProfile,
+  updateProfileImage,
+} from "@/services/api";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -71,6 +77,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
+  DialogClose,
 } from "@/components/ui/dialog";
 
 interface User {
@@ -89,12 +96,34 @@ interface User {
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingImage, setIsEditingImage] = useState(false);
+  const [imageFile, setImageFile] = useState<File | null>(null);
   const [editData, setEditData] = useState({
     username: "",
     phone_number: "",
     domicile_address: "",
   });
   const router = useRouter();
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageFile(e.target.files[0]);
+    }
+  };
+
+  const handleSaveImage = () => {
+    if (user && imageFile) {
+      updateProfileImage(user.partner_uid, imageFile)
+        .then((response) => {
+          toast.success("Profile picture updated successfully!");
+          setUser({ ...user, image_url: response.data.data.image_url });
+        })
+        .catch((error) => {
+          toast.error("Profile picture update failed. Please try again.");
+          console.error("Profile picture update failed:", error);
+        });
+    }
+  };
 
   useEffect(() => {
     getCurrentUser()
@@ -387,13 +416,37 @@ const Dashboard = () => {
             >
               <CardHeader>
                 <div className="flex flex-col items-center gap-6">
-                  <Avatar className="w-32 h-32">
-                    <img
-                      src={user.image_url || "/placeholder.svg"}
-                      alt={user.username}
-                    />
-                    <AvatarFallback>{user.username[0]}</AvatarFallback>
-                  </Avatar>
+                  <div className="relative">
+                    <Avatar className="w-32 h-32">
+                      <img src={user?.image_url || "/placeholder.svg"} />
+                    </Avatar>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="secondary"
+                          className="absolute -bottom-2 -right-2 rounded-full py-2 px-3"
+                        >
+                          <PencilIcon className="h-4 w-4 hover:scale-110 transition-all" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="p-4 max-w-sm">
+                        <DialogHeader>
+                          <DialogTitle>Edit Profile Picture</DialogTitle>
+                          <DialogDescription>
+                            Select a new profile picture to upload.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                        />
+                        <DialogClose asChild>
+                          <Button onClick={handleSaveImage}>Save</Button>
+                        </DialogClose>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
                   <div className="text-center">
                     <h3 className="text-lg font-semibold">{user.username}</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-400">
