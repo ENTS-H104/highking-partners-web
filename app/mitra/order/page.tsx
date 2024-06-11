@@ -7,7 +7,7 @@ import {
   Copy,
   CreditCard,
   File,
-  Home,
+  UserRound,
   ListFilter,
   MoreVertical,
   Package,
@@ -70,7 +70,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import ProtectedRoute from '@/components/ProtectedRoute';
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const Order = () => {
   return (
@@ -97,7 +97,7 @@ const Order = () => {
                   href="/mitra/dashboard"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
-                  <Home className="h-5 w-5" />
+                  <UserRound className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
                 </Link>
               </TooltipTrigger>
@@ -174,7 +174,7 @@ const Order = () => {
                   href="/mitra/dashboard"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  <Home className="h-5 w-5" />
+                  <UserRound className="h-5 w-5" />
                   Dashboard
                 </Link>
                 <Link
@@ -630,6 +630,6 @@ const Order = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ProtectedRoute(Order);

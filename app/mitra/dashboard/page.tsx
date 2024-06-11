@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -9,11 +9,11 @@ import {
   CreditCard,
   Home,
   Package,
-  Package2,
   PanelLeft,
   Search,
   Settings,
   ShoppingCart,
+  UserRound,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,6 +32,7 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import {
   DropdownMenu,
@@ -58,9 +59,100 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 
-import ProtectedRoute from '@/components/ProtectedRoute';
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { getCurrentUser, logout, updateProfile } from "@/services/api";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface User {
+  user_uid: string;
+  verified_status_uuid: string;
+  role: string;
+  email: string;
+  username: string;
+  image_url: string;
+  phone_number: string;
+  domicile_address: string;
+  created_at: string;
+  updated_at: string;
+}
 
 const Dashboard = () => {
+  const [user, setUser] = useState<any>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    username: "",
+    phone_number: "",
+    domicile_address: "",
+  });
+  const router = useRouter();
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((response) => {
+        const userData = response.data.data[0];
+        setUser(userData);
+        setEditData({
+          username: userData.username,
+          phone_number: userData.phone_number,
+          domicile_address: userData.domicile_address,
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching user data:", error);
+      });
+  }, []);
+
+  const handleLogout = () => {
+    logout()
+      .then(() => {
+        toast.success("Logout successful. Redirecting to login page...");
+        localStorage.removeItem("token");
+        setTimeout(() => {
+          router.push("/auth/login");
+        }, 1500);
+      })
+      .catch((error) => {
+        console.error("Logout failed:", error);
+      });
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSave = () => {
+    if (user) {
+      const savePromise = updateProfile(user.partner_uid, editData);
+      toast.promise(savePromise, {
+        loading: "Updating profile...",
+        success: "Profile updated successfully!",
+        error: (err) => `Profile update failed. ${err.message}`,
+      });
+      savePromise
+        .then(() => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+          setIsEditing(false);
+        })
+        .catch((error) => {
+          console.error("Profile update failed:", error);
+        });
+    }
+  };
+
+  if (!user) return <div></div>;
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -85,7 +177,7 @@ const Dashboard = () => {
                   href="#"
                   className="flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
-                  <Home className="h-5 w-5" />
+                  <UserRound className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
                 </Link>
               </TooltipTrigger>
@@ -162,7 +254,7 @@ const Dashboard = () => {
                   href="#"
                   className="flex items-center gap-4 px-2.5 text-foreground"
                 >
-                  <Home className="h-5 w-5" />
+                  <UserRound className="h-5 w-5" />
                   Dashboard
                 </Link>
                 <Link
@@ -281,6 +373,127 @@ const Dashboard = () => {
             </Card>
           </div>
           <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
+            <Card
+              x-chunk="dashboard-01-chunk-5"
+              className="flex flex-col justify-between"
+            >
+              <CardHeader>
+                <div className="flex flex-col items-center gap-6">
+                  <Avatar className="w-32 h-32">
+                    <img
+                      src={user.image_url || "/placeholder.svg"}
+                      alt={user.username}
+                    />
+                    <AvatarFallback>{user.username[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold">{user.username}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {user.email}
+                    </p>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {isEditing ? (
+                  <div className="grid gap-4">
+                    <div className="grid gap-1">
+                      <label className="text-sm text-gray-500 dark:text-gray-400">
+                        Username
+                      </label>
+                      <Input
+                        value={editData.username}
+                        onChange={(e) =>
+                          setEditData({ ...editData, username: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-1">
+                      <label className="text-sm text-gray-500 dark:text-gray-400">
+                        Phone
+                      </label>
+                      <Input
+                        value={editData.phone_number}
+                        onChange={(e) =>
+                          setEditData({
+                            ...editData,
+                            phone_number: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                    <div className="grid gap-1">
+                      <label className="text-sm text-gray-500 dark:text-gray-400">
+                        Address
+                      </label>
+                      <Input
+                        value={editData.domicile_address}
+                        onChange={(e) =>
+                          setEditData({
+                            ...editData,
+                            domicile_address: e.target.value,
+                          })
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid gap-4">
+                    <div className="grid gap-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Phone
+                      </p>
+                      <p>{user.phone_number}</p>
+                    </div>
+                    <div className="grid gap-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Address
+                      </p>
+                      <p>{user.domicile_address}</p>
+                    </div>
+                    <div className="grid gap-1">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Created At
+                      </p>
+                      <p>{new Date(user.created_at).toLocaleDateString()}</p>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter>
+                {isEditing ? (
+                  <Button className="ml-auto" onClick={handleSave}>
+                    Save
+                  </Button>
+                ) : (
+                  <div className="flex flex-row items-center gap-2 ml-auto">
+                    <Button className="ml-auto" onClick={handleEdit}>
+                      Edit
+                    </Button>
+                    <Dialog>
+                      <DialogTrigger>
+                        <Button variant="destructive" className="ml-auto">
+                          Logout
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="p-4 max-w-sm">
+                        <DialogHeader>
+                          <DialogTitle>
+                            Are you sure you want to logout?
+                          </DialogTitle>
+                          <DialogDescription>
+                            You will be redirected to the login page.
+                          </DialogDescription>
+                          <Button variant="destructive" onClick={handleLogout}>
+                            Logout
+                          </Button>
+                        </DialogHeader>
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                )}
+              </CardFooter>
+            </Card>
             <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
               <CardHeader className="flex flex-row items-center">
                 <div className="grid gap-2">
@@ -418,93 +631,11 @@ const Dashboard = () => {
                 </Table>
               </CardContent>
             </Card>
-            <Card x-chunk="dashboard-01-chunk-5">
-              <CardHeader>
-                <CardTitle>Recent Sales</CardTitle>
-              </CardHeader>
-              <CardContent className="grid gap-8">
-                <div className="flex items-center gap-4">
-                  <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/01.png" alt="Avatar" />
-                    <AvatarFallback>OM</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      Olivia Martin
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      olivia.martin@email.com
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium">+$1,999.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/02.png" alt="Avatar" />
-                    <AvatarFallback>JL</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      Jackson Lee
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      jackson.lee@email.com
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium">+$39.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/03.png" alt="Avatar" />
-                    <AvatarFallback>IN</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      Isabella Nguyen
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      isabella.nguyen@email.com
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium">+$299.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/04.png" alt="Avatar" />
-                    <AvatarFallback>WK</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      William Kim
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      will@email.com
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium">+$99.00</div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <Avatar className="hidden h-9 w-9 sm:flex">
-                    <AvatarImage src="/avatars/05.png" alt="Avatar" />
-                    <AvatarFallback>SD</AvatarFallback>
-                  </Avatar>
-                  <div className="grid gap-1">
-                    <p className="text-sm font-medium leading-none">
-                      Sofia Davis
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      sofia.davis@email.com
-                    </p>
-                  </div>
-                  <div className="ml-auto font-medium">+$39.00</div>
-                </div>
-              </CardContent>
-            </Card>
           </div>
         </main>
       </div>
     </div>
   );
-}
+};
 
 export default ProtectedRoute(Dashboard);

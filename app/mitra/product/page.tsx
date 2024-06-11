@@ -6,7 +6,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   File,
-  Home,
+  UserRound,
   LineChart,
   ListFilter,
   MoreHorizontal,
@@ -332,7 +332,7 @@ const Product = () => {
                   href="/mitra/dashboard"
                   className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8"
                 >
-                  <Home className="h-5 w-5" />
+                  <UserRound className="h-5 w-5" />
                   <span className="sr-only">Dashboard</span>
                 </Link>
               </TooltipTrigger>
@@ -409,7 +409,7 @@ const Product = () => {
                   href="/mitra/dashboard"
                   className="flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  <Home className="h-5 w-5" />
+                  <UserRound className="h-5 w-5" />
                   Dashboard
                 </Link>
                 <Link
@@ -606,7 +606,9 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="include">Include (Separate with comma)</Label>
+                        <Label htmlFor="include">
+                          Include (Separate with comma)
+                        </Label>
                         <Input
                           name="include"
                           placeholder="Include"
@@ -615,7 +617,9 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="exclude">Exclude (Separate with comma)</Label>
+                        <Label htmlFor="exclude">
+                          Exclude (Separate with comma)
+                        </Label>
                         <Input
                           name="exclude"
                           placeholder="Exclude"
@@ -707,7 +711,7 @@ const Product = () => {
                     <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm py-20 md:py-40">
                       <div className="flex flex-col items-center gap-1 text-center">
                         <h3 className="text-2xl font-bold tracking-tight">
-                          You have no open trip
+                          You dont have open trip
                         </h3>
                         <p className="text-sm text-muted-foreground">
                           You can start selling as soon as you add a open trip.{" "}
