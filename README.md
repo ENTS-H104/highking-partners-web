@@ -32,8 +32,8 @@ The HighKing Partners Web App is tailored for open trip partners to efficiently 
 - [React Documentation](https://reactjs.org/docs/getting-started.html)
 - [Node.js Documentation](https://nodejs.org/en/docs/)
 - [Postman Documentation](https://learning.postman.com/docs/getting-started/introduction/)
-- [Shadcn UI Documentation](https://shadcn.dev/docs)
-- [Aceternity UI Documentation](https://aceternity.dev/docs)
+- [Shadcn UI Documentation](https://ui.shadcn.com/docs)
+- [Aceternity UI Documentation](https://ui.aceternity.com/docs/install-nextjs)
 
 ## 🚩 Issues
 
