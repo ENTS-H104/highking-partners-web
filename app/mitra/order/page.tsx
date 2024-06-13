@@ -71,8 +71,101 @@ import {
   TooltipProvider,
 } from "@/components/ui/tooltip";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+interface Transaction {
+  transaction_logs_uuid: string;
+  user_uid: string;
+  open_trip_uuid: string;
+  status_payment: string | null;
+  status_accepted: string;
+  total_participant: number;
+  amount_paid: number;
+  payment_gateway_name: string;
+  token: string | null;
+}
+
+const statusColorClasses = {
+  PENDING: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold",
+  CANCELED: "bg-red-200 hover:bg-red-300 text-red-800 font-bold",
+  ACCEPTED: "bg-green-200 hover:bg-green-300 text-green-800 font-bold",
+};
+
+const fetchTransactions = async (
+  partnerUuid: string
+): Promise<Transaction[]> => {
+  try {
+    const response = await axios.get(
+      `https://highking.cloud/api/transaction/get-transaction-partneruuid/${partnerUuid}`
+    );
+    return response.data.data as Transaction[];
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    return [];
+  }
+};
+
+const updateTransactionStatus = async (
+  transactionId: string,
+  status: string
+) => {
+  try {
+    const response = await axios.post(
+      "https://highking.cloud/api/transaction/update-status-accepted",
+      {
+        id: transactionId,
+        status: status,
+      }
+    );
+    toast.success("Transaction status updated successfully");
+    console.log("Transaction updated:", response.data);
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
+  } catch (error) {
+    toast.error("Error updating transaction status");
+    console.error("Error updating transaction status:", error);
+  }
+};
+
+const getCurrentPartnerId = async () => {
+  const response = await axios.get(
+    "https://highking.cloud/api/partners/get-current-user",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  return response.data.data[0].partner_uid;
+};
 
 const Order = () => {
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+  const [newStatus, setNewStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const partnerUuid = await getCurrentPartnerId();
+      fetchTransactions(partnerUuid).then((data) => setTransactions(data));
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -236,7 +329,7 @@ const Order = () => {
           </DropdownMenu> */}
         </header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
-          <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-2">
+          <div className="grid auto-rows-max items-start gap-4 md:gap-8 lg:col-span-3">
             <Tabs defaultValue="week">
               <div className="flex items-center">
                 <TabsList>
@@ -282,7 +375,7 @@ const Order = () => {
               </div>
               <TabsContent value="week">
                 <Card x-chunk="dashboard-05-chunk-3">
-                  <div style={{ filter: "blur(4px)" }}>
+                  <div>
                     <CardHeader className="px-7">
                       <CardTitle>Orders</CardTitle>
                       <CardDescription>
@@ -293,370 +386,125 @@ const Order = () => {
                       <Table>
                         <TableHeader>
                           <TableRow>
-                            <TableHead>Customer</TableHead>
+                            <TableHead>Transaction ID</TableHead>
+                            <TableHead>Amount</TableHead>
                             <TableHead className="hidden sm:table-cell">
-                              Type
+                              Status Payment
                             </TableHead>
                             <TableHead className="hidden sm:table-cell">
-                              Status
+                              Status Mitra
                             </TableHead>
                             <TableHead className="hidden md:table-cell">
-                              Date
+                              Total Participant
                             </TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          <TableRow className="bg-accent">
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $250.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Olivia Smith</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                olivia@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Refund
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="outline">
-                                Declined
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-24
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $150.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Noah Williams</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                noah@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Subscription
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-25
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $350.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Emma Brown</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                emma@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-26
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $450.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $250.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Liam Johnson</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                liam@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-23
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $250.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Olivia Smith</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                olivia@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Refund
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="outline">
-                                Declined
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-24
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $150.00
-                            </TableCell>
-                          </TableRow>
-                          <TableRow>
-                            <TableCell>
-                              <div className="font-medium">Emma Brown</div>
-                              <div className="hidden text-sm text-muted-foreground md:inline">
-                                emma@example.com
-                              </div>
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              Sale
-                            </TableCell>
-                            <TableCell className="hidden sm:table-cell">
-                              <Badge className="text-xs" variant="secondary">
-                                Fulfilled
-                              </Badge>
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell">
-                              2023-06-26
-                            </TableCell>
-                            <TableCell className="text-right">
-                              $450.00
-                            </TableCell>
-                          </TableRow>
+                          {transactions.map((transaction) => (
+                            <TableRow key={transaction.transaction_logs_uuid}>
+                              <TableCell>
+                                <div className="font-medium">
+                                  {transaction.transaction_logs_uuid}
+                                </div>
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                Rp {transaction.amount_paid.toLocaleString()}
+                              </TableCell>
+                              <TableCell className="hidden sm:table-cell">
+                                <Badge className="text-xs" variant="outline">
+                                  {transaction.status_payment || "N/A"}
+                                </Badge>
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button
+                                      variant="outline"
+                                      className={`scale-75 -ml-4 rounded-full ${
+                                        statusColorClasses[
+                                          transaction.status_accepted
+                                        ] || "bg-gray-500 hover:bg-gray-600"
+                                      }`}
+                                    >
+                                      {transaction.status_accepted}
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent className="w-56">
+                                    <DropdownMenuLabel>
+                                      Edit Status
+                                    </DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuCheckboxItem
+                                      onSelect={() => {
+                                        setSelectedTransaction(transaction);
+                                        setNewStatus("ACCEPTED");
+                                      }}
+                                    >
+                                      ACCEPTED
+                                    </DropdownMenuCheckboxItem>
+                                    <DropdownMenuCheckboxItem
+                                      onSelect={() => {
+                                        setSelectedTransaction(transaction);
+                                        setNewStatus("CANCELED");
+                                      }}
+                                    >
+                                      CANCELED
+                                    </DropdownMenuCheckboxItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                              <TableCell>
+                                {transaction.total_participant}
+                              </TableCell>
+                            </TableRow>
+                          ))}
                         </TableBody>
                       </Table>
+                      {selectedTransaction && (
+                        <Dialog
+                          open={!!selectedTransaction}
+                          onOpenChange={() => setSelectedTransaction(null)}
+                        >
+                          <DialogTrigger asChild>
+                            <Button variant="outline">Confirm Update</Button>
+                          </DialogTrigger>
+                          <DialogContent className="sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle>Confirm Status Update</DialogTitle>
+                              <DialogDescription>
+                                Are you sure you want to update the status of
+                                this transaction to "{newStatus}"?
+                              </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                              <Button
+                                onClick={() => {
+                                  if (selectedTransaction && newStatus) {
+                                    updateTransactionStatus(
+                                      selectedTransaction.transaction_logs_uuid,
+                                      newStatus
+                                    );
+                                    setSelectedTransaction(null); // Close dialog after updating
+                                  }
+                                }}
+                              >
+                                Confirm
+                              </Button>
+                              <Button
+                                variant="outline"
+                                onClick={() => setSelectedTransaction(null)}
+                              >
+                                Cancel
+                              </Button>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+                      )}
                     </CardContent>
                   </div>
                 </Card>
               </TabsContent>
             </Tabs>
-          </div>
-          <div>
-            <Card className="overflow-hidden" x-chunk="dashboard-05-chunk-4">
-              <div style={{ filter: "blur(4px)" }}>
-                <CardHeader className="flex flex-row items-start bg-muted/50">
-                  <div className="grid gap-0.5">
-                    <CardTitle className="group flex items-center gap-2 text-lg">
-                      Order Oe31b70H
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        className="h-6 w-6 opacity-0 transition-opacity group-hover:opacity-100"
-                      >
-                        <Copy className="h-3 w-3" />
-                        <span className="sr-only">Copy Order ID</span>
-                      </Button>
-                    </CardTitle>
-                    <CardDescription>Date: November 23, 2023</CardDescription>
-                  </div>
-                  <div className="ml-auto flex items-center gap-1">
-                    <Button size="sm" variant="outline" className="h-8 gap-1">
-                      <Truck className="h-3.5 w-3.5" />
-                      <span className="lg:sr-only xl:not-sr-only xl:whitespace-nowrap">
-                        Track Order
-                      </span>
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-8 w-8"
-                        >
-                          <MoreVertical className="h-3.5 w-3.5" />
-                          <span className="sr-only">More</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
-                        <DropdownMenuItem>Export</DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Trash</DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </CardHeader>
-                <CardContent className="p-6 text-sm">
-                  <div className="grid gap-3">
-                    <div className="font-semibold">Order Details</div>
-                    <ul className="grid gap-3">
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">
-                          Glimmer Lamps x <span>2</span>
-                        </span>
-                        <span>$250.00</span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">
-                          Aqua Filters x <span>1</span>
-                        </span>
-                        <span>$49.00</span>
-                      </li>
-                    </ul>
-                    <Separator className="my-2" />
-                    <ul className="grid gap-3">
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Subtotal</span>
-                        <span>$299.00</span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Shipping</span>
-                        <span>$5.00</span>
-                      </li>
-                      <li className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Tax</span>
-                        <span>$25.00</span>
-                      </li>
-                      <li className="flex items-center justify-between font-semibold">
-                        <span className="text-muted-foreground">Total</span>
-                        <span>$329.00</span>
-                      </li>
-                    </ul>
-                  </div>
-                  <Separator className="my-4" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="grid gap-3">
-                      <div className="font-semibold">Shipping Information</div>
-                      <address className="grid gap-0.5 not-italic text-muted-foreground">
-                        <span>Liam Johnson</span>
-                        <span>1234 Main St.</span>
-                        <span>Anytown, CA 12345</span>
-                      </address>
-                    </div>
-                    <div className="grid auto-rows-max gap-3">
-                      <div className="font-semibold">Billing Information</div>
-                      <div className="text-muted-foreground">
-                        Same as shipping address
-                      </div>
-                    </div>
-                  </div>
-                  <Separator className="my-4" />
-                  <div className="grid gap-3">
-                    <div className="font-semibold">Customer Information</div>
-                    <dl className="grid gap-3">
-                      <div className="flex items-center justify-between">
-                        <dt className="text-muted-foreground">Customer</dt>
-                        <dd>Liam Johnson</dd>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <dt className="text-muted-foreground">Email</dt>
-                        <dd>
-                          <a href="mailto:">liam@acme.com</a>
-                        </dd>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <dt className="text-muted-foreground">Phone</dt>
-                        <dd>
-                          <a href="tel:">+1 234 567 890</a>
-                        </dd>
-                      </div>
-                    </dl>
-                  </div>
-                  <Separator className="my-4" />
-                  <div className="grid gap-3">
-                    <div className="font-semibold">Payment Information</div>
-                    <dl className="grid gap-3">
-                      <div className="flex items-center justify-between">
-                        <dt className="flex items-center gap-1 text-muted-foreground">
-                          <CreditCard className="h-4 w-4" />
-                          Visa
-                        </dt>
-                        <dd>**** **** **** 4532</dd>
-                      </div>
-                    </dl>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex flex-row items-center border-t bg-muted/50 px-6 py-3">
-                  <div className="text-xs text-muted-foreground">
-                    Updated <time dateTime="2023-11-23">November 23, 2023</time>
-                  </div>
-                  <Pagination className="ml-auto mr-0 w-auto">
-                    <PaginationContent>
-                      <PaginationItem>
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-6 w-6"
-                        >
-                          <ChevronLeft className="h-3.5 w-3.5" />
-                          <span className="sr-only">Previous Order</span>
-                        </Button>
-                      </PaginationItem>
-                      <PaginationItem>
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          className="h-6 w-6"
-                        >
-                          <ChevronRight className="h-3.5 w-3.5" />
-                          <span className="sr-only">Next Order</span>
-                        </Button>
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
-                </CardFooter>
-              </div>
-            </Card>
           </div>
         </main>
       </div>

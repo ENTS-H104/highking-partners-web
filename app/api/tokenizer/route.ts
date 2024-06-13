@@ -1,4 +1,3 @@
-
 import { NextRequest, NextResponse } from "next/server";
 
 function sanitizeInput(input: string): string {
