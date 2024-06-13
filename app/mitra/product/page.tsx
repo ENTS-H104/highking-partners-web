@@ -17,6 +17,7 @@ import {
   Search,
   Settings,
   ShoppingCart,
+  CirclePlus,
   Users2,
 } from "lucide-react";
 
@@ -437,7 +438,7 @@ const Product = () => {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
@@ -446,7 +447,7 @@ const Product = () => {
           </div>
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild> */}
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             className="overflow-hidden rounded-full"
@@ -458,7 +459,7 @@ const Product = () => {
               alt="Avatar"
               className="overflow-hidden rounded-full"
             />
-          </Button>
+          </Button> */}
           {/* </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -726,7 +727,7 @@ const Product = () => {
                       <TableHeader>
                         <TableRow>
                           <TableHead className="hidden w-[100px] sm:table-cell">
-                            <span className="sr-only">Image</span>
+                            <span className="">Image</span>
                           </TableHead>
                           <TableHead>Open Trip Name</TableHead>
                           <TableHead>Mountain</TableHead>
@@ -740,7 +741,7 @@ const Product = () => {
                             Total Participants
                           </TableHead>
                           <TableHead>
-                            <span className="sr-only">Actions</span>
+                            <span>Actions</span>
                           </TableHead>
                         </TableRow>
                       </TableHeader>
@@ -778,14 +779,13 @@ const Product = () => {
                                   <Button
                                     aria-haspopup="true"
                                     size="icon"
-                                    variant="ghost"
+                                    variant="outline"
                                   >
-                                    <MoreHorizontal className="h-4 w-4" />
+                                    <CirclePlus className="h-4 w-4" />
                                     <span className="sr-only">Toggle menu</span>
                                   </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                   <DropdownMenuLabel>
                                     <Dialog
                                       open={isScheduleModalOpen}

@@ -193,7 +193,7 @@ const Profile = () => {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
@@ -202,7 +202,7 @@ const Profile = () => {
           </div>
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild> */}
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             className="overflow-hidden rounded-full"
@@ -214,7 +214,7 @@ const Profile = () => {
               alt="Avatar"
               className="overflow-hidden rounded-full"
             />
-          </Button>
+          </Button> */}
           {/* </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>

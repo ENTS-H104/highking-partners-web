@@ -17,7 +17,7 @@ export default function Component() {
   useEffect(() => {
     getCurrentUser()
       .then(() => {
-        router.push("/mitra/product");
+        router.push("/mitra/dashboard");
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);

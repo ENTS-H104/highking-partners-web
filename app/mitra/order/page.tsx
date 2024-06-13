@@ -2,38 +2,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Copy,
-  CreditCard,
   File,
   UserRound,
   ListFilter,
-  MoreVertical,
   Package,
-  Package2,
   PanelLeft,
   Search,
   Settings,
   ShoppingCart,
-  Truck,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -41,19 +31,11 @@ import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-} from "@/components/ui/pagination";
-import { Progress } from "@/components/ui/progress";
-import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   Table,
@@ -116,29 +98,6 @@ const fetchTransactions = async (
   }
 };
 
-const updateTransactionStatus = async (
-  transactionId: string,
-  status: string
-) => {
-  try {
-    const response = await axios.post(
-      "https://highking.cloud/api/transaction/update-status-accepted",
-      {
-        id: transactionId,
-        status: status,
-      }
-    );
-    toast.success("Transaction status updated successfully");
-    console.log("Transaction updated:", response.data);
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
-  } catch (error) {
-    toast.error("Error updating transaction status");
-    console.error("Error updating transaction status:", error);
-  }
-};
-
 const getCurrentPartnerId = async () => {
   const response = await axios.get(
     "https://highking.cloud/api/partners/get-current-user",
@@ -156,6 +115,32 @@ const Order = () => {
   const [selectedTransaction, setSelectedTransaction] =
     useState<Transaction | null>(null);
   const [newStatus, setNewStatus] = useState<string | null>(null);
+
+  const updateTransactionStatus = async (
+    transactionId: string,
+    status: string
+  ) => {
+    try {
+      const response = await axios.post(
+        "https://highking.cloud/api/transaction/update-status-accepted",
+        {
+          id: transactionId,
+          status: status,
+        }
+      );
+      toast.success("Transaction status updated successfully");
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction.transaction_logs_uuid === transactionId
+            ? { ...transaction, status_accepted: status }
+            : transaction
+        )
+      );
+    } catch (error) {
+      toast.error("Error updating transaction status");
+      console.error("Error updating transaction status:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -295,7 +280,7 @@ const Order = () => {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
@@ -304,7 +289,7 @@ const Order = () => {
           </div>
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild> */}
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             className="overflow-hidden rounded-full"
@@ -316,7 +301,7 @@ const Order = () => {
               alt="Avatar"
               className="overflow-hidden rounded-full"
             />
-          </Button>
+          </Button> */}
           {/* </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>

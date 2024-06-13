@@ -39,6 +39,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuCheckboxItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
@@ -78,7 +79,10 @@ import {
   DialogDescription,
   DialogTrigger,
   DialogClose,
+  DialogFooter,
 } from "@/components/ui/dialog";
+
+import axios from "axios";
 
 interface User {
   user_uid: string;
@@ -92,6 +96,50 @@ interface User {
   created_at: string;
   updated_at: string;
 }
+
+interface Transaction {
+  transaction_logs_uuid: string;
+  user_uid: string;
+  open_trip_uuid: string;
+  status_payment: string | null;
+  status_accepted: string;
+  total_participant: number;
+  amount_paid: number;
+  payment_gateway_name: string;
+  token: string | null;
+}
+
+const statusColorClasses = {
+  PENDING: "bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold",
+  CANCELED: "bg-red-200 hover:bg-red-300 text-red-800 font-bold",
+  ACCEPTED: "bg-green-200 hover:bg-green-300 text-green-800 font-bold",
+};
+
+const fetchTransactions = async (
+  partnerUuid: string
+): Promise<Transaction[]> => {
+  try {
+    const response = await axios.get(
+      `https://highking.cloud/api/transaction/get-transaction-partneruuid/${partnerUuid}`
+    );
+    return response.data.data as Transaction[];
+  } catch (error) {
+    console.error("Error fetching transactions:", error);
+    return [];
+  }
+};
+
+const getCurrentPartnerId = async () => {
+  const response = await axios.get(
+    "https://highking.cloud/api/partners/get-current-user",
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  return response.data.data[0].partner_uid;
+};
 
 const Dashboard = () => {
   const [user, setUser] = useState<any>(null);
@@ -179,6 +227,46 @@ const Dashboard = () => {
         });
     }
   };
+
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
+  const [newStatus, setNewStatus] = useState<string | null>(null);
+
+  const updateTransactionStatus = async (
+    transactionId: string,
+    status: string
+  ) => {
+    try {
+      const response = await axios.post(
+        "https://highking.cloud/api/transaction/update-status-accepted",
+        {
+          id: transactionId,
+          status: status,
+        }
+      );
+      toast.success("Transaction status updated successfully");
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction.transaction_logs_uuid === transactionId
+            ? { ...transaction, status_accepted: status }
+            : transaction
+        )
+      );
+    } catch (error) {
+      toast.error("Error updating transaction status");
+      console.error("Error updating transaction status:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const partnerUuid = await getCurrentPartnerId();
+      fetchTransactions(partnerUuid).then((data) => setTransactions(data));
+    };
+
+    fetchData();
+  }, []);
 
   if (!user) return <div></div>;
 
@@ -311,7 +399,7 @@ const Dashboard = () => {
             </BreadcrumbList>
           </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Search className="absolute left-2.5 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
               placeholder="Search..."
@@ -320,7 +408,7 @@ const Dashboard = () => {
           </div>
           {/* <DropdownMenu>
             <DropdownMenuTrigger asChild> */}
-          <Button
+          {/* <Button
             variant="outline"
             size="icon"
             className="overflow-hidden rounded-full"
@@ -332,7 +420,7 @@ const Dashboard = () => {
               alt="Avatar"
               className="overflow-hidden rounded-full"
             />
-          </Button>
+          </Button> */}
           {/* </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -345,70 +433,6 @@ const Dashboard = () => {
           </DropdownMenu> */}
         </header>
         <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8">
-          <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-            <Card x-chunk="dashboard-01-chunk-0">
-              <div style={{ filter: "blur(4px)" }}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Total Revenue
-                  </CardTitle>
-                  <DollarSign className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">$45,231.89</div>
-                  <p className="text-xs text-muted-foreground">
-                    +20.1% from last month
-                  </p>
-                </CardContent>
-              </div>
-            </Card>
-            <Card x-chunk="dashboard-01-chunk-1">
-              <div style={{ filter: "blur(4px)" }}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Subscriptions
-                  </CardTitle>
-                  <Users className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">+2350</div>
-                  <p className="text-xs text-muted-foreground">
-                    +180.1% from last month
-                  </p>
-                </CardContent>
-              </div>{" "}
-            </Card>
-            <Card x-chunk="dashboard-01-chunk-2">
-              <div style={{ filter: "blur(4px)" }}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                  <CreditCard className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">+12,234</div>
-                  <p className="text-xs text-muted-foreground">
-                    +19% from last month
-                  </p>
-                </CardContent>
-              </div>
-            </Card>
-            <Card x-chunk="dashboard-01-chunk-3">
-              <div style={{ filter: "blur(4px)" }}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    Active Now
-                  </CardTitle>
-                  <Activity className="h-4 w-4 text-muted-foreground" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">+573</div>
-                  <p className="text-xs text-muted-foreground">
-                    +201 since last hour
-                  </p>
-                </CardContent>
-              </div>
-            </Card>
-          </div>
           <div className="grid gap-4 md:gap-8 lg:grid-cols-2 xl:grid-cols-3">
             <Card
               x-chunk="dashboard-01-chunk-5"
@@ -556,16 +580,16 @@ const Dashboard = () => {
               </CardFooter>
             </Card>
             <Card className="xl:col-span-2" x-chunk="dashboard-01-chunk-4">
-              <div style={{ filter: "blur(4px)" }}>
+              <div>
                 <CardHeader className="flex flex-row items-center">
                   <div className="grid gap-2">
-                    <CardTitle>Transactions</CardTitle>
+                    <CardTitle>Last Orders</CardTitle>
                     <CardDescription>
                       Recent transactions from your store.
                     </CardDescription>
                   </div>
                   <Button asChild size="sm" className="ml-auto gap-1">
-                    <Link href="#">
+                    <Link href="/mitra/order">
                       View All
                       <ArrowUpRight className="h-4 w-4" />
                     </Link>
@@ -575,122 +599,118 @@ const Dashboard = () => {
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Customer</TableHead>
-                        <TableHead className="hidden xl:table-column">
-                          Type
+                        <TableHead>Transaction ID</TableHead>
+                        <TableHead className="hidden sm:table-cell">
+                          Amount
                         </TableHead>
-                        <TableHead className="hidden xl:table-column">
-                          Status
+                        <TableHead className="hidden sm:table-cell">
+                          Status Payment
                         </TableHead>
-                        <TableHead className="hidden xl:table-column">
-                          Date
+                        <TableHead className="hidden sm:table-cell">
+                          Total Participant
                         </TableHead>
-                        <TableHead className="text-right">Amount</TableHead>
+                        <TableHead className="">Status</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      <TableRow>
-                        <TableCell>
-                          <div className="font-medium">Liam Johnson</div>
-                          <div className="hidden text-sm text-muted-foreground md:inline">
-                            liam@example.com
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          Sale
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          <Badge className="text-xs" variant="outline">
-                            Approved
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                          2023-06-23
-                        </TableCell>
-                        <TableCell className="text-right">$250.00</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>
-                          <div className="font-medium">Olivia Smith</div>
-                          <div className="hidden text-sm text-muted-foreground md:inline">
-                            olivia@example.com
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          Refund
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          <Badge className="text-xs" variant="outline">
-                            Declined
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                          2023-06-24
-                        </TableCell>
-                        <TableCell className="text-right">$150.00</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>
-                          <div className="font-medium">Noah Williams</div>
-                          <div className="hidden text-sm text-muted-foreground md:inline">
-                            noah@example.com
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          Subscription
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          <Badge className="text-xs" variant="outline">
-                            Approved
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                          2023-06-25
-                        </TableCell>
-                        <TableCell className="text-right">$350.00</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>
-                          <div className="font-medium">Emma Brown</div>
-                          <div className="hidden text-sm text-muted-foreground md:inline">
-                            emma@example.com
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          Sale
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          <Badge className="text-xs" variant="outline">
-                            Approved
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                          2023-06-26
-                        </TableCell>
-                        <TableCell className="text-right">$450.00</TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell>
-                          <div className="font-medium">Liam Johnson</div>
-                          <div className="hidden text-sm text-muted-foreground md:inline">
-                            liam@example.com
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          Sale
-                        </TableCell>
-                        <TableCell className="hidden xl:table-column">
-                          <Badge className="text-xs" variant="outline">
-                            Approved
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell lg:hidden xl:table-column">
-                          2023-06-27
-                        </TableCell>
-                        <TableCell className="text-right">$550.00</TableCell>
-                      </TableRow>
+                      {transactions.slice(0, 5).map((transaction) => (
+                        <TableRow key={transaction.transaction_logs_uuid}>
+                          <TableCell>
+                            <div className="font-medium">
+                              {transaction.transaction_logs_uuid}
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            Rp {transaction.amount_paid.toLocaleString()}
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                            <Badge className="text-xs" variant="outline">
+                              {transaction.status_payment || "N/A"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>{transaction.total_participant}</TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  className={`scale-75 -ml-4 rounded-full ${
+                                    statusColorClasses[
+                                      transaction.status_accepted
+                                    ] || "bg-gray-500 hover:bg-gray-600"
+                                  }`}
+                                >
+                                  {transaction.status_accepted}
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent className="w-56">
+                                <DropdownMenuLabel>
+                                  Edit Status
+                                </DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuCheckboxItem
+                                  onSelect={() => {
+                                    setSelectedTransaction(transaction);
+                                    setNewStatus("ACCEPTED");
+                                  }}
+                                >
+                                  ACCEPTED
+                                </DropdownMenuCheckboxItem>
+                                <DropdownMenuCheckboxItem
+                                  onSelect={() => {
+                                    setSelectedTransaction(transaction);
+                                    setNewStatus("CANCELED");
+                                  }}
+                                >
+                                  CANCELED
+                                </DropdownMenuCheckboxItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
                     </TableBody>
                   </Table>
+                  {selectedTransaction && (
+                    <Dialog
+                      open={!!selectedTransaction}
+                      onOpenChange={() => setSelectedTransaction(null)}
+                    >
+                      <DialogTrigger asChild>
+                        <Button variant="outline">Confirm Update</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Confirm Status Update</DialogTitle>
+                          <DialogDescription>
+                            Are you sure you want to update the status of this
+                            transaction to "{newStatus}"?
+                          </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                          <Button
+                            onClick={() => {
+                              if (selectedTransaction && newStatus) {
+                                updateTransactionStatus(
+                                  selectedTransaction.transaction_logs_uuid,
+                                  newStatus
+                                );
+                                setSelectedTransaction(null); // Close dialog after updating
+                              }
+                            }}
+                          >
+                            Confirm
+                          </Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setSelectedTransaction(null)}
+                          >
+                            Cancel
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </CardContent>
               </div>
             </Card>
