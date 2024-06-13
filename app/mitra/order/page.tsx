@@ -458,7 +458,7 @@ const Order = () => {
                               <DialogTitle>Confirm Status Update</DialogTitle>
                               <DialogDescription>
                                 Are you sure you want to update the status of
-                                this transaction to "{newStatus}"?
+                                this transaction to {newStatus}?
                               </DialogDescription>
                             </DialogHeader>
                             <DialogFooter>
