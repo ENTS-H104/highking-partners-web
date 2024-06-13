@@ -625,7 +625,7 @@ const Dashboard = () => {
                           </TableCell>
                           <TableCell className="hidden sm:table-cell">
                             <Badge className="text-xs" variant="outline">
-                              {transaction.status_payment || "N/A"}
+                              {transaction.status_payment}
                             </Badge>
                           </TableCell>
                           <TableCell>{transaction.total_participant}</TableCell>

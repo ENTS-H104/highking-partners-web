@@ -397,7 +397,7 @@ const Order = () => {
                               </TableCell>
                               <TableCell className="hidden sm:table-cell">
                                 <Badge className="text-xs" variant="outline">
-                                  {transaction.status_payment || "N/A"}
+                                  {transaction.status_payment}
                                 </Badge>
                               </TableCell>
                               <TableCell className="hidden md:table-cell">
