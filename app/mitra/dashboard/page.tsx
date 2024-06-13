@@ -609,7 +609,7 @@ const Dashboard = () => {
                         <TableHead className="hidden sm:table-cell">
                           Total Participant
                         </TableHead>
-                        <TableHead className="">Status</TableHead>
+                        <TableHead className="">Status Mitra</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
