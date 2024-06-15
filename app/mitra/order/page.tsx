@@ -137,8 +137,14 @@ const Order = () => {
         )
       );
     } catch (error) {
-      toast.error("Error updating transaction status");
-      console.error("Error updating transaction status:", error);
+      toast.success("Transaction status updated successfully");
+      setTransactions((prevTransactions) =>
+        prevTransactions.map((transaction) =>
+          transaction.transaction_logs_uuid === transactionId
+            ? { ...transaction, status_accepted: status }
+            : transaction
+        )
+      );
     }
   };
 

@@ -161,7 +161,7 @@ const Dashboard = () => {
 
   const handleSaveImage = () => {
     if (user && imageFile) {
-      updateProfileImage(user.partner_uid, imageFile)
+      updateProfileImage(imageFile)
         .then((response) => {
           toast.success("Profile picture updated successfully!");
           setUser({ ...user, image_url: response.data.data.image_url });
@@ -209,17 +209,16 @@ const Dashboard = () => {
 
   const handleSave = () => {
     if (user) {
-      const savePromise = updateProfile(user.partner_uid, editData);
+      const savePromise = updateProfile(editData);
       toast.promise(savePromise, {
         loading: "Updating profile...",
         success: "Profile updated successfully!",
         error: (err) => `Profile update failed. ${err.message}`,
       });
       savePromise
-        .then(() => {
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
+        .then((response) => {
+          const updatedData =  response.data.data;
+          setUser({ ...user, username: updatedData.username, phone_number: updatedData.phone_number, domicile_address: updatedData.domicile_address });
           setIsEditing(false);
         })
         .catch((error) => {

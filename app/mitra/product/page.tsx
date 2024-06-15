@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
+import CreatableSelect from 'react-select/creatable';
 import {
   File,
   UserRound,
@@ -68,6 +69,7 @@ import {
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 import { Label } from "@/components/ui/label";
+import Select from "react-select";
 
 import {
   Dialog,
@@ -108,6 +110,30 @@ interface NewOpenTrip {
   image: File | null;
 }
 
+const includeOptions = [
+  "Transportasi PP",
+  "Simaksi",
+  "Guide",
+  "Rumah singgah/Homestay",
+  "Makan (sesudah atau Sebelum pendakian)",
+  "Makan (selama pendakian)",
+  "Air mineral",
+  "P3K standard",
+  "Alat Masak",
+  "Tenda Toilet",
+  "Porter Team",
+  "Tenda",
+  "Alat makan",
+  "Dokumentasi",
+  "Private/Tidak",
+  "Logistik",
+  "Coffe Break/Buah",
+  "BBM",
+  "Tiket",
+  "Jeep",
+  "Asuransi",
+];
+
 interface Mountain {
   mountain_uuid: string;
   name: string;
@@ -121,6 +147,22 @@ const Product = () => {
   const [currentTrip, setCurrentTrip] = useState<OpenTrip | null>(null);
   const [newFaqQuestion, setNewFaqQuestion] = useState("");
   const [newFaqAnswer, setNewFaqAnswer] = useState("");
+  const [includes, setIncludes] = useState<string[]>([]);
+  const [excludes, setExcludes] = useState<string[]>([]);
+
+  const handleMultiSelectChange = (selectedOptions) => {
+    const selectedValues = selectedOptions
+      ? selectedOptions.map((option) => option.value)
+      : [];
+    setIncludes(selectedValues);
+  };
+
+  const handleExcludeChange = (selectedOptions) => {
+    const selectedValues = selectedOptions
+      ? selectedOptions.map((option) => option.value)
+      : [];
+    setExcludes(selectedValues);
+  };
 
   const [newSchedule, setNewSchedule] = useState({
     open_trip_uuid: "",
@@ -279,7 +321,6 @@ const Product = () => {
   const handleAddProduct = async () => {
     const formData = new FormData();
     for (const key in newTrip) {
-      console.log(newTrip[key as keyof NewOpenTrip]);
       if (newTrip[key as keyof NewOpenTrip] !== null) {
         formData.append(
           key,
@@ -287,6 +328,16 @@ const Product = () => {
         );
       }
     }
+
+    const allIncludes = includes.filter((item) => item.trim());
+    const includeString = allIncludes.join(",");
+
+    const allExcludes = excludes.filter((item) => item.trim());
+    const excludeString = allExcludes.join(",");
+
+    formData.append("include", includeString);
+    formData.append("exclude", excludeString);
+
     try {
       const response = await axios.post(
         "https://highking.cloud/api/open-trips",
@@ -579,15 +630,6 @@ const Product = () => {
                         />
                       </div>
 
-                      <div className="col-span-2">
-                        <Label htmlFor="policy">Policy</Label>
-                        <Input
-                          name="policy"
-                          placeholder="Policy"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
                       <div className="col-span-1">
                         <Label htmlFor="min_people">Min People</Label>
                         <Input
@@ -607,24 +649,52 @@ const Product = () => {
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="include">
-                          Include (Separate with comma)
-                        </Label>
+                        <Label htmlFor="gmaps">Google Maps Link</Label>
                         <Input
-                          name="include"
-                          placeholder="Include"
+                          name="gmaps"
+                          placeholder="Google Maps Link"
                           onChange={handleInputChange}
                         />
                       </div>
 
                       <div className="col-span-2">
-                        <Label htmlFor="exclude">
-                          Exclude (Separate with comma)
-                        </Label>
-                        <Input
+                        <Label htmlFor="include">Include</Label>
+                        <CreatableSelect 
+                          isClearable
+                          isMulti
+                          name="include"
+                          closeMenuOnSelect={false}
+                          options={includeOptions.map((option) => ({
+                            value: option,
+                            label: option,
+                          }))}
+                          className="basic-multi-select text-sm"
+                          classNamePrefix="select"
+                          onChange={handleMultiSelectChange}
+                          value={includes.map((value) => ({
+                            value,
+                            label: value,
+                          }))}
+                        />
+                      </div>
+                      <div className="col-span-2">
+                        <Label htmlFor="exclude">Exclude</Label>
+                        <CreatableSelect 
+                          isClearable
+                          isMulti
                           name="exclude"
-                          placeholder="Exclude"
-                          onChange={handleInputChange}
+                          closeMenuOnSelect={false}
+                          options={includeOptions.map((option) => ({
+                            value: option,
+                            label: option,
+                          }))}
+                          className="basic-multi-select"
+                          classNamePrefix="select"
+                          onChange={handleExcludeChange}
+                          value={excludes.map((value) => ({
+                            value,
+                            label: value,
+                          }))}
                         />
                       </div>
 
@@ -648,6 +718,7 @@ const Product = () => {
                         />
                       </div>
 
+
                       <div className="col-span-1">
                         <Label htmlFor="start_time">Start Time</Label>
                         <Input
@@ -664,15 +735,6 @@ const Product = () => {
                           name="end_time"
                           type="time"
                           placeholder="End Time"
-                          onChange={handleInputChange}
-                        />
-                      </div>
-
-                      <div className="col-span-2">
-                        <Label htmlFor="gmaps">Google Maps Link</Label>
-                        <Input
-                          name="gmaps"
-                          placeholder="Google Maps Link"
                           onChange={handleInputChange}
                         />
                       </div>

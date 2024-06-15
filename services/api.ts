@@ -32,14 +32,14 @@ interface UserResponse {
 }
 
 export const getCurrentUser = (): Promise<{ data: UserResponse }> => api.get('/partners/get-current-user');
-export const updateProfile = (partner_uid: string, data: { username?: string; phone_number?: string; domicile_address?: string }) => api.put(`/partners/update/${partner_uid}`, data);
+export const updateProfile = (data: { username?: string; phone_number?: string; domicile_address?: string }) => api.put(`/partners/update`, data);
 export const logout = () => api.get('/partners/logout');  
 
-export const updateProfileImage = (partner_uid: string, image: File) => {
+export const updateProfileImage = (image: File) => {
   const formData = new FormData();
   formData.append('image', image);
 
-  return api.put(`/partners/update/photo/${partner_uid}`, formData, {
+  return api.put(`/partners/update/photo`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
