@@ -321,7 +321,11 @@ const Product = () => {
   const handleAddProduct = async () => {
     const formData = new FormData();
     for (const key in newTrip) {
-      if (newTrip[key as keyof NewOpenTrip] !== null) {
+      if (
+        key !== "include" &&
+        key !== "exclude" &&
+        newTrip[key as keyof NewOpenTrip] !== null
+      ) {
         formData.append(
           key,
           newTrip[key as keyof NewOpenTrip] as string | Blob
