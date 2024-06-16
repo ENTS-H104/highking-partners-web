@@ -215,9 +215,6 @@ const Product = () => {
       );
       toast.success("Schedule added successfully!");
       setScheduleModalOpen(false);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (error) {
       toast.error("Failed to add schedule. Please try again.");
       console.error("Failed to add schedule:", error);
@@ -238,9 +235,6 @@ const Product = () => {
       );
       toast.success("FAQ added successfully!");
       setFaqModalOpen(false);
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
     } catch (error) {
       toast.error("Failed to add FAQ. Please try again.");
       console.error("Failed to add FAQ:", error);
