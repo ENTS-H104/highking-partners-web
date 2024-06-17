@@ -16,8 +16,15 @@ export default function Component() {
   const router = useRouter();
   useEffect(() => {
     getCurrentUser()
-      .then(() => {
-        router.push("/mitra/dashboard");
+      .then((currentUserResponse) => {
+        const user = currentUserResponse.data.data[0];
+        if (user.role === "admin") {
+          router.push("/admin/dashboard");
+        } else if (user.role === "mitra") {
+          router.push("/mitra/dashboard");
+        } else {
+          throw new Error("Unknown role");
+        }
       })
       .catch((error) => {
         console.error("Error fetching user data:", error);
@@ -27,9 +34,7 @@ export default function Component() {
   }, []);
 
   if (isLoading) {
-    return (
-      <div></div>
-    );
+    return <div></div>;
   }
   return (
     <div className="flex flex-col min-h-[100dvh]">
