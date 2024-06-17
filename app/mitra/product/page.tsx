@@ -352,6 +352,14 @@ const Product = () => {
     return response.data.data[0].open_trip_data;
   };
 
+  if (openTrips === null) {
+    return (
+      <MitraLayout>
+        <></>
+      </MitraLayout>
+    );
+  }
+
   return (
     <MitraLayout>
       <Tabs defaultValue="all">

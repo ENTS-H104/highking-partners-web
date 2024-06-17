@@ -139,6 +139,14 @@ const Order = () => {
     fetchData();
   }, []);
 
+  if (transactions.length === 0) {
+    return (
+      <MitraLayout>
+        <></>
+      </MitraLayout>
+    );
+  }
+
   return (
     <MitraLayout>
       <Tabs defaultValue="week">

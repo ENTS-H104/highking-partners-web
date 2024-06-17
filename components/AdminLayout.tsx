@@ -2,20 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-import {
-  UserRound,
-  PanelLeft,
-  Search,
-  ShoppingCart,
-  Package,
-} from "lucide-react";
+import { UserRound, PanelLeft, Search, CircleCheckBig } from "lucide-react";
 
 import {
   Breadcrumb,
@@ -23,17 +16,17 @@ import {
   BreadcrumbList,
 } from "@/components/ui/breadcrumb";
 
-interface MitraLayoutProps {
+interface AdminLayoutProps {
   children: ReactNode;
 }
 
-const MitraLayout = ({ children }: MitraLayoutProps) => {
+const AdminLayout = ({ children }: AdminLayoutProps) => {
   const pathname = usePathname();
 
   return (
     <div className="min-h-screen w-full flex">
-      <aside className="fixed top-0 left-0 h-full w-[220px] border-r bg-muted/40 hidden md:flex flex-col gap-2">
-        <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
+      <aside className="fixed top-0 left-0 h-full w-[220px] bg-muted/40 hidden md:flex flex-col gap-2 border-r">
+        <div className="flex h-14 items-center px-4 lg:h-[60px] lg:px-6 border-b">
           <Link href="/" className="flex items-center gap-2 font-semibold">
             <Image
               src="/logo_highking_fill.svg"
@@ -47,9 +40,9 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
         <div className="flex-1 overflow-y-auto">
           <nav className="grid grid-cols-1 gap-2 items-start px-2 text-sm font-medium lg:px-4">
             <Link
-              href="/mitra/dashboard"
+              href="/admin/dashboard"
               className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
-                pathname === "/mitra/dashboard"
+                pathname === "/admin/dashboard"
                   ? "bg-muted text-foreground font-semibold"
                   : "text-muted-foreground transition-all hover:text-foreground hover:font-semibold"
               }`}
@@ -58,44 +51,21 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
               Dashboard
             </Link>
             <Link
-              href="/mitra/order"
+              href="/admin/verify"
               className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
-                pathname === "/mitra/order"
+                pathname === "/admin/verify"
                   ? "bg-muted text-foreground font-semibold"
                   : "text-muted-foreground transition-all hover:text-foreground hover:font-semibold"
               }`}
             >
-              <ShoppingCart className="h-4 w-4" />
-              Orders
-            </Link>
-            <Link
-              href="/mitra/product"
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 ${
-                pathname === "/mitra/product"
-                  ? "bg-muted text-foreground font-semibold"
-                  : "text-muted-foreground transition-all hover:text-foreground hover:font-semibold"
-              }`}
-            >
-              <Package className="h-4 w-4" />
-              Open Trip
+              <CircleCheckBig className="h-4 w-4" />
+              Verify Partner
             </Link>
           </nav>
         </div>
-        <div className="mt-auto p-4">
-          <div className="card bg-white shadow-lg rounded-lg p-4 text-center">
-            <h3 className="font-semibold">Boost Your Open Trip</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Upgrade your account to premium and get more benefits for your
-              open trip.
-            </p>
-            <Button className="mt-4 w-full bg-primary text-white rounded-lg px-4 py-2 transition-all hover:bg-primary-dark">
-              Upgrade
-            </Button>
-          </div>
-        </div>
       </aside>
       <div className="flex flex-col flex-1 md:ml-[220px]">
-        <header className="fixed bg-white z-50 top-0 left-0 right-0 flex h-14 items-center gap-4 border-b bg-muted/40 px-4 lg:h-[60px] lg:px-6 md:ml-[220px]">
+        <header className="fixed bg-white z-50 top-0 left-0 right-0 flex h-14 items-center gap-4 bg-muted/40 px-4 lg:h-[60px] lg:px-6 border-b md:ml-[220px]">
           <Sheet>
             <SheetTrigger asChild>
               <Button size="icon" variant="outline" className="sm:hidden">
@@ -119,9 +89,9 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
                   <span className="sr-only">HighKing</span>
                 </Link>
                 <Link
-                  href="/mitra/dashboard"
+                  href="/admin/dashboard"
                   className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/mitra/dashboard"
+                    pathname === "/admin/dashboard"
                       ? "text-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
@@ -130,26 +100,15 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
                   Dashboard
                 </Link>
                 <Link
-                  href="/mitra/order"
+                  href="/admin/verify"
                   className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/mitra/order"
+                    pathname === "/admin/verify"
                       ? "text-foreground font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
-                  <ShoppingCart className="h-5 w-5" />
-                  Orders
-                </Link>
-                <Link
-                  href="/mitra/product"
-                  className={`flex items-center gap-4 px-2.5 ${
-                    pathname === "/mitra/product"
-                      ? "text-foreground font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  <Package className="h-5 w-5" />
-                  Open Trip
+                  <CircleCheckBig className="h-5 w-5" />
+                  Verify Partner
                 </Link>
               </nav>
             </SheetContent>
@@ -157,12 +116,10 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
           <Breadcrumb className="hidden md:flex">
             <BreadcrumbList>
               <BreadcrumbItem>
-                {pathname === "/mitra/dashboard"
+                {pathname === "/admin/dashboard"
                   ? "Dashboard"
-                  : pathname === "/mitra/order"
-                  ? "Orders"
-                  : pathname === "/mitra/product"
-                  ? "Open Trip"
+                  : pathname === "/admin/verify"
+                  ? "Verify Partner"
                   : "Dashboard"}
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -184,4 +141,4 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
   );
 };
 
-export default MitraLayout;
+export default AdminLayout;

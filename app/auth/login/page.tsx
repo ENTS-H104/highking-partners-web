@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Toaster, toast } from "sonner";
 import { cn } from "@/utils/cn";
 import { motion } from "framer-motion";
+import axios from 'axios';
 
 const Login = () => {
   const router = useRouter();
@@ -41,9 +42,28 @@ const Login = () => {
 
     toast.promise(loginPromise, {
       loading: "Logging in...",
-      success: (data) => {
-        router.push("/mitra/dashboard");
-        return "Login successful";
+      success: async (data) => {
+        try {
+          const currentUserResponse = await axios.get('https://highking.cloud/api/partners/get-current-user', {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          });
+
+          const user = currentUserResponse.data.data[0];
+          if (user.role === 'admin') {
+            router.push("/admin/dashboard");
+          } else if (user.role === 'mitra') {
+            router.push("/mitra/dashboard");
+          } else {
+            throw new Error("Unknown role");
+          }
+
+          return "Login successful";
+        } catch (error) {
+          localStorage.removeItem("token");
+          return "Failed to fetch user details after login. Please try again.";
+        }
       },
       error: "Login failed. Please check your credentials and try again.",
     });

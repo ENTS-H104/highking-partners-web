@@ -246,7 +246,7 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (!user) return <div></div>;
+  if (!user) return (<MitraLayout><></></MitraLayout>);
 
   return (
     <MitraLayout>
