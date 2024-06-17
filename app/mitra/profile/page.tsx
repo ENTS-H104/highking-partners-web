@@ -61,7 +61,7 @@ import {
   TooltipTrigger,
   TooltipProvider,
 } from "@/components/ui/tooltip";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedRouteMitra from "@/components/ProtectedRouteMitra";
 
 const Profile = () => {
   return (
@@ -231,4 +231,4 @@ const Profile = () => {
   );
 };
 
-export default ProtectedRoute(Profile);
+export default ProtectedRouteMitra(Profile);

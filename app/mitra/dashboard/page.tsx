@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import MitraLayout from "@/components/MitraLayout";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedRouteMitra from "@/components/ProtectedRouteMitra";
 import axios from "axios";
 
 import { useEffect, useState } from "react";
@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { ArrowUpRight, PencilIcon } from "lucide-react";
-
 
 import {
   Card,
@@ -163,18 +162,27 @@ const Dashboard = () => {
       });
   }, []);
 
-  const handleLogout = () => {
-    logout()
-      .then(() => {
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get("https://highking.cloud/api/partners/logout", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (response.status === 200) {
         toast.success("Logout successful. Redirecting to login page...");
         localStorage.removeItem("token");
         setTimeout(() => {
           router.push("/auth/login");
         }, 1500);
-      })
-      .catch((error) => {
-        console.error("Logout failed:", error);
-      });
+      } else {
+        toast.error("Failed to logout. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Logout failed. Please try again.");
+    }
   };
 
   const handleEdit = () => {
@@ -246,7 +254,12 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
-  if (!user) return (<MitraLayout><></></MitraLayout>);
+  if (!user)
+    return (
+      <MitraLayout>
+        <></>
+      </MitraLayout>
+    );
 
   return (
     <MitraLayout>
@@ -534,4 +547,4 @@ const Dashboard = () => {
   );
 };
 
-export default ProtectedRoute(Dashboard);
+export default ProtectedRouteMitra(Dashboard);

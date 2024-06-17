@@ -1,10 +1,12 @@
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 import axios from "axios";
 
-const ProtectedRouteAdmin = (WrappedComponent: React.ComponentType) => {
+const ProtectedRouteMitra = (WrappedComponent: React.ComponentType) => {
   const Wrapper = (props: any) => {
+    const pathname = usePathname();
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const router = useRouter();
 
@@ -21,19 +23,36 @@ const ProtectedRouteAdmin = (WrappedComponent: React.ComponentType) => {
               },
             }
           );
-
+          console.log(response.data.data[0]);
           const user = response.data.data[0];
 
-          if (user.role !== "admin") {
-            toast.error("You must be an admin to access this page");
+          if (user.verification_data[0].verified_status === "onprocess") {
+            toast.error("Your verification is still on process");
+            router.replace("/mitra/onprocess");
+            return;
+          }
+
+          if (user.verification_data[0].verified_status === "disabled") {
+            toast.error("Please verify your account first");
             setTimeout(() => {
-              router.replace("/mitra/dashboard");
-            }, 2000);
+              router.replace("/mitra/verify");
+            }, 1500);
+            return;
+          }
+
+          if (user.verification_data[0].verified_status === "rejected") {
+            toast.error(
+              "Your last verification has been rejected, please verify your account again"
+            );
+            setTimeout(() => {
+              router.replace("/mitra/rejected");
+            }, 1500);
             return;
           }
 
           setIsAuthenticated(true);
         } catch (error) {
+          console.log(error);
           toast.error("You must be logged in to access this page");
           setTimeout(() => {
             router.replace("/auth/login");
@@ -70,4 +89,4 @@ const ProtectedRouteAdmin = (WrappedComponent: React.ComponentType) => {
   return Wrapper;
 };
 
-export default ProtectedRouteAdmin;
+export default ProtectedRouteMitra;

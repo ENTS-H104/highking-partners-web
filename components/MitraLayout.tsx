@@ -2,12 +2,26 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import axios from "axios";
 
 import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+  DialogClose,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 import {
   UserRound,
@@ -29,6 +43,32 @@ interface MitraLayoutProps {
 
 const MitraLayout = ({ children }: MitraLayoutProps) => {
   const pathname = usePathname();
+  const router = useRouter();
+  const handleLogout = async () => {
+    try {
+      const response = await axios.get(
+        "https://highking.cloud/api/partners/logout",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Logout successful. Redirecting to login page...");
+        localStorage.removeItem("token");
+        setTimeout(() => {
+          router.push("/auth/login");
+        }, 1500);
+      } else {
+        toast.error("Failed to logout. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Logout failed. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen w-full flex">
@@ -82,16 +122,24 @@ const MitraLayout = ({ children }: MitraLayoutProps) => {
           </nav>
         </div>
         <div className="mt-auto p-4">
-          <div className="card bg-white shadow-lg rounded-lg p-4 text-center">
-            <h3 className="font-semibold">Boost Your Open Trip</h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Upgrade your account to premium and get more benefits for your
-              open trip.
-            </p>
-            <Button className="mt-4 w-full bg-primary text-white rounded-lg px-4 py-2 transition-all hover:bg-primary-dark">
-              Upgrade
-            </Button>
-          </div>
+          <Dialog>
+            <DialogTrigger className="w-full">
+              <Button variant="destructive" className="w-full">
+                Logout
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="p-4 max-w-sm">
+              <DialogHeader>
+                <DialogTitle>Are you sure you want to logout?</DialogTitle>
+                <DialogDescription>
+                  You will be redirected to the login page.
+                </DialogDescription>
+                <Button variant="destructive" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </DialogHeader>
+            </DialogContent>
+          </Dialog>
         </div>
       </aside>
       <div className="flex flex-col flex-1 md:ml-[220px]">

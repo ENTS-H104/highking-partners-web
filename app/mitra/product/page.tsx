@@ -3,7 +3,7 @@ import MitraLayout from "@/components/MitraLayout";
 import axios from "axios";
 import Image from "next/image";
 import CreatableSelect from "react-select/creatable";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedRouteMitra from "@/components/ProtectedRouteMitra";
 
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -832,4 +832,4 @@ const Product = () => {
   );
 };
 
-export default ProtectedRoute(Product);
+export default ProtectedRouteMitra(Product);

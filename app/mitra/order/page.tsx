@@ -1,7 +1,7 @@
 "use client";
 
 import MitraLayout from "@/components/MitraLayout";
-import ProtectedRoute from "@/components/ProtectedRoute";
+import ProtectedRouteMitra from "@/components/ProtectedRouteMitra";
 import axios from "axios";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -316,4 +316,4 @@ const Order = () => {
   );
 };
 
-export default ProtectedRoute(Order);
+export default ProtectedRouteMitra(Order);
