@@ -24,10 +24,18 @@ const ProtectedRouteAdmin = (WrappedComponent: React.ComponentType) => {
 
           const user = response.data.data[0];
 
-          if (user.role !== "admin") {
+          if (user.role === "mitra") {
             toast.error("You must be an admin to access this page");
             setTimeout(() => {
               router.replace("/mitra/dashboard");
+            }, 2000);
+            return;
+          }
+
+          if (user.role !== "admin") {
+            toast.error("You must be an admin to access this page");
+            setTimeout(() => {
+              router.replace("/auth/login");
             }, 2000);
             return;
           }

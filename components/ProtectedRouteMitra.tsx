@@ -26,6 +26,22 @@ const ProtectedRouteMitra = (WrappedComponent: React.ComponentType) => {
           console.log(response.data.data[0]);
           const user = response.data.data[0];
 
+          if(user.role === "admin") {
+            toast.error("What are you doing here? Go create your own mitra account!");
+            setTimeout(() => {
+              router.replace("/admin/dashboard");
+            }, 2000);
+            return;
+          }
+
+          if (user.role !== "mitra") {
+            toast.error("You must be a partner to access this page");
+            setTimeout(() => {
+              router.replace("/auth/login");
+            }, 2000);
+            return;
+          }
+
           if (user.verification_data[0].verified_status === "onprocess") {
             toast.error("Your verification is still on process");
             router.replace("/mitra/onprocess");
