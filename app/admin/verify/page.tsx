@@ -266,11 +266,11 @@ const VerificationTable = ({ data, setSelectedImage, setSelectedVerification, se
             <TableHeader>
               <TableRow>
                 <TableHead>User Profile</TableHead>
-                <TableHead>NIK</TableHead>
-                <TableHead>Nama KTP</TableHead>
-                <TableHead>KTP</TableHead>
-                <TableHead className="hidden sm:table-cell">Selfie KTP</TableHead>
-                <TableHead className="hidden sm:table-cell">Status</TableHead>
+                <TableHead className="hidden md:table-cell">NIK</TableHead>
+                <TableHead className="hidden md:table-cell">Nama KTP</TableHead>
+                <TableHead className="hidden lg:table-cell">KTP</TableHead>
+                <TableHead className="hidden lg:table-cell">Selfie KTP</TableHead>
+                <TableHead>Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -285,9 +285,9 @@ const VerificationTable = ({ data, setSelectedImage, setSelectedVerification, se
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{verification.verification_data[0].nik}</TableCell>
-                  <TableCell>{verification.verification_data[0].name}</TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="hidden md:table-cell">{verification.verification_data[0].nik}</TableCell>
+                  <TableCell className="hidden md:table-cell">{verification.verification_data[0].name}</TableCell>
+                  <TableCell className="hidden lg:table-cell">
                     <img
                       src={verification.verification_data[0].image_ktp}
                       alt="KTP"
@@ -295,7 +295,7 @@ const VerificationTable = ({ data, setSelectedImage, setSelectedVerification, se
                       onClick={() => setSelectedImage(verification.verification_data[0].image_ktp)}
                     />
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell">
+                  <TableCell className="hidden lg:table-cell">
                     <img
                       src={verification.verification_data[0].image_selfie_and_ktp}
                       alt="Selfie with KTP"
@@ -303,7 +303,7 @@ const VerificationTable = ({ data, setSelectedImage, setSelectedVerification, se
                       onClick={() => setSelectedImage(verification.verification_data[0].image_selfie_and_ktp)}
                     />
                   </TableCell>
-                  <TableCell className="hidden md:table-cell">
+                  <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button

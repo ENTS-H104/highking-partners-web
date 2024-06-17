@@ -197,15 +197,17 @@ const Order = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Transaction ID</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead className="hidden sm:table-cell">
+                      <TableHead >Transaction ID</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Amount
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell">
                         Status Payment
                       </TableHead>
                       <TableHead className="hidden sm:table-cell">
                         Status Mitra
                       </TableHead>
-                      <TableHead className="hidden md:table-cell">
+                      <TableHead className="hidden lg:table-cell">
                         Total Participant
                       </TableHead>
                     </TableRow>
@@ -218,15 +220,15 @@ const Order = () => {
                             {transaction.transaction_logs_uuid}
                           </div>
                         </TableCell>
-                        <TableCell className="hidden sm:table-cell">
+                        <TableCell className="hidden md:table-cell">
                           Rp {transaction.amount_paid.toLocaleString()}
                         </TableCell>
-                        <TableCell className="hidden sm:table-cell">
+                        <TableCell className="hidden md:table-cell">
                           <Badge className="text-xs" variant="outline">
                             {transaction.status_payment || "N/A"}
                           </Badge>
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">
+                        <TableCell className="hidden sm:table-cell">
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
                               <Button
@@ -262,7 +264,9 @@ const Order = () => {
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
-                        <TableCell>{transaction.total_participant}</TableCell>
+                        <TableCell className="hidden lg:table-cell">
+                          {transaction.total_participant}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

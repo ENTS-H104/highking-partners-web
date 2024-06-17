@@ -622,18 +622,20 @@ const Product = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="hidden w-[100px] sm:table-cell">
+                      <TableHead className="hidden w-[100px] md:table-cell">
                         <span className="">Image</span>
                       </TableHead>
                       <TableHead>Open Trip Name</TableHead>
-                      <TableHead>Mountain</TableHead>
-                      <TableHead className="hidden md:table-cell">
+                      <TableHead className="hidden sm:table-cell">
+                        Mountain
+                      </TableHead>
+                      <TableHead className="hidden lg:table-cell">
                         Status
                       </TableHead>
                       <TableHead className="hidden md:table-cell">
                         Price
                       </TableHead>
-                      <TableHead className="hidden md:table-cell">
+                      <TableHead className="hidden lg:table-cell">
                         Total Participants
                       </TableHead>
                       <TableHead>
@@ -644,7 +646,7 @@ const Product = () => {
                   <TableBody>
                     {openTrips.map((trip) => (
                       <TableRow key={trip.open_trip_uuid}>
-                        <TableCell className="hidden sm:table-cell">
+                        <TableCell className="hidden md:table-cell">
                           <Image
                             alt="Product image"
                             className="aspect-square rounded-md object-cover"
@@ -656,8 +658,10 @@ const Product = () => {
                         <TableCell className="font-medium">
                           {trip.name}
                         </TableCell>
-                        <TableCell>{trip.mountain_name}</TableCell>
-                        <TableCell className="hidden md:table-cell">
+                        <TableCell className="hidden sm:table-cell">
+                          {trip.mountain_name}
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell">
                           <Badge variant="outline">Active</Badge>
                         </TableCell>
                         <TableCell className="hidden md:table-cell">
@@ -666,7 +670,7 @@ const Product = () => {
                             currency: "IDR",
                           }).format(trip.price)}
                         </TableCell>
-                        <TableCell className="hidden md:table-cell">
+                        <TableCell className="hidden lg:table-cell">
                           {trip.total_participants}
                         </TableCell>
                         <TableCell>
