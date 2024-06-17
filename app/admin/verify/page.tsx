@@ -58,6 +58,8 @@ const rejectionMessages = [
 ];
 
 interface VerificationData {
+  nik: string;
+  name: string;
   verified_status_uuid: string;
   image_ktp: string;
   image_selfie_and_ktp: string;
@@ -264,6 +266,8 @@ const VerificationTable = ({ data, setSelectedImage, setSelectedVerification, se
             <TableHeader>
               <TableRow>
                 <TableHead>User Profile</TableHead>
+                <TableHead>NIK</TableHead>
+                <TableHead>Nama KTP</TableHead>
                 <TableHead>KTP</TableHead>
                 <TableHead className="hidden sm:table-cell">Selfie KTP</TableHead>
                 <TableHead className="hidden sm:table-cell">Status</TableHead>
@@ -281,6 +285,8 @@ const VerificationTable = ({ data, setSelectedImage, setSelectedVerification, se
                       </div>
                     </div>
                   </TableCell>
+                  <TableCell>{verification.verification_data[0].nik}</TableCell>
+                  <TableCell>{verification.verification_data[0].name}</TableCell>
                   <TableCell className="hidden sm:table-cell">
                     <img
                       src={verification.verification_data[0].image_ktp}
