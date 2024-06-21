@@ -17,6 +17,11 @@
 
 The HighKing Partners Web App is tailored for open trip partners to efficiently manage their products and incoming orders. Developed using Next.js, this capstone project provides a comprehensive platform for partners to track reservations, update trip details, and communicate with clients.
 
+## 💫 Full Documentation (Screenshot)
+
+Notion Documentation of the Web Application
+[Notion Documentation of the Web Application]([https://nextjs.org/docs](https://regal-flannel-91c.notion.site/HighKing-Web-Application-35275c2ffffa41a8af11d8a4bd6fa65b?pvs=4)
+
 ## 💻 Tech Stack
 
 ![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white)
