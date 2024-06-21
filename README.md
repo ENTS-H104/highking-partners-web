@@ -19,8 +19,7 @@ The HighKing Partners Web App is tailored for open trip partners to efficiently 
 
 ## 💫 Full Documentation
 
-Notion Documentation of the Web Application
-[Notion Documentation of the Web Application]([https://nextjs.org/docs](https://regal-flannel-91c.notion.site/HighKing-Web-Application-35275c2ffffa41a8af11d8a4bd6fa65b?pvs=4))
+[Notion Documentation of the Web Application](https://regal-flannel-91c.notion.site/HighKing-Web-Application-35275c2ffffa41a8af11d8a4bd6fa65b?pvs=4)
 
 ## 💻 Tech Stack
 
